@@ -1,3 +1,9 @@
 /build/
+
 *.git
-*.vscode	
+
+#vscode config
+.vscode/
+
+#compiled header dateien
+*.gch	
