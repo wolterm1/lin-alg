@@ -1,55 +1,75 @@
-#include <iostream>
-#include <exception>
-
-template <typename T> 
-class Matrix {
-    private:
-    T* m_ptr;//point to start of arrs of pointers, this way memory for matrix can be allocated at runtime
-    size_t m_rows;
-    size_t m_columns;
-    
-    public:
-    /// @brief Constructs identity matrix
-    Matrix(const size_t &rows, const size_t &columns);
-    /// @brief Copy-Constructor
-    Matrix(const Matrix<T> &other); 
-    /// @brief Move-Constructor 
-    Matrix(Matrix<T>&& other) noexcept;
-    
-    /// @brief Destructor
-    ~Matrix();
-     
-    Matrix<T>& operator=(Matrix<T> other);
-    bool operator==(const Matrix<T> &other) const;
-    bool operator!=(const Matrix<T> &other) const;
-    T& operator()(const size_t &i, const size_t &j) const;
-    
-    Matrix<T> operator*(const T &skalar);
-    Matrix<T> operator*(const Matrix<T> &other);
-    Matrix<T> operator+(const Matrix<T> &other);
-
-    
-    size_t getRows() const;
-    size_t getColumns() const;
+namespace linAlg  {
     
 
-    void Print();
-    template <typename x>
-    friend std::ostream& operator<<(std::ostream& os, const Matrix<x> &Mat);
-
-    friend void swap(Matrix<T> &first, Matrix<T> &second){
-        using std::swap;
-        swap(first.m_rows, second.m_rows);
-        swap(first.m_columns, second.m_columns);
-        swap(first.m_ptr, second.m_ptr);
+    template <typename T>
+    Matrix<T>::Matrix(const size_t &rows, const size_t &columns)  {
+        if(rows <= 0 || columns <= 0){
+            throw std::invalid_argument("Unable to Create Matrix with Dimensions 0x0");
+        }
+        m_rows = rows;
+        m_columns = columns;
+        m_ptr = new T[rows*columns];
+        for(int i=0; i<rows; i++)  {
+            for(int j=0; j<columns;j++)  {
+                if(i==j)  {
+                    (*this)(i,j) = 1;
+                } else {
+                    (*this)(i,j) = 0;
+                }
+            }
+        }
     }
-};
+
+    template <typename T>
+    Matrix<T>::Matrix(const Matrix<T> &other) : m_columns(other.m_columns), m_rows(other.m_rows)  {
+        m_ptr = new T[other.m_rows * other.m_columns];
+        for (int i=0; i<other.m_rows; i++)  {
+            for (int j=0; j<other.m_columns; j++)  {
+                (*this)(i,j) = other(i,j);
+            }
+        }
+    }
 
 
+    template <typename T>
+    Matrix<T>::~Matrix()  {
+        delete[] m_ptr;
+    }
+
+    template <typename T>
+    std::ostream& operator<<(std::ostream &os, const Matrix<T> &mat)  {
+        for(int i=0; i< mat.m_rows; i++)  {
+            os << " | ";
+            for (int j=0; j<mat.m_columns; j++)  {
+                os << mat(i,j) << " | ";
+            }
+            os << "\n";
+        }
+        return os << "\n";
+    }
+
+    template <typename T>
+    T& Matrix<T>::operator()(const size_t &row, const size_t &column) const {
+        return *(m_ptr+column+(row*m_columns));
+    }
+
+    template <typename T>
+    size_t Matrix<T>::getRows() const  {
+        return m_rows;
+    }
+
+    template <typename T>
+    size_t Matrix<T>::getColumns() const  {
+        return m_columns;
+    }
+
+    template <typename T>
+    bool Matrix<T>::operator==(const Matrix<T> &other) const  {
+        if(m_rows != other.m_rows || m_columns != other.m_columns)  {
+            return false;
+        }
+    }    
+}
 
 
-
-
-
-
-#include "matrix.ipp"
+//should empty matrizes be constructed? operator== fails for size 0.
