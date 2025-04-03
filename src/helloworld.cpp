@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-#include "matrix.hpp"
+#include "../include/matrix.hpp"
 #include <cstdint>
 #include <utility>
 
@@ -8,9 +8,6 @@ int main () {
 
     //#################### Constructor/Destructor #################
     
-    linAlg::Matrix<float> testMat(3,3);
-    std::cout << testMat;
-
-    linAlg::Matrix<float> copiedTestMat = testMat;
-    std::cout << copiedTestMat;
+    linAlg::Matrix<int> mat4(4,4);
+    std::cout<< mat4 << std::endl;
 }

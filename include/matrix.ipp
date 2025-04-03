@@ -1,3 +1,6 @@
+#pragma once
+
+
 namespace linAlg  {
     
 
@@ -6,8 +9,8 @@ namespace linAlg  {
         if(rows <= 0 || columns <= 0){
             throw std::invalid_argument("Unable to Create Matrix with Dimensions 0x0");
         }
-        m_rows = rows;
-        m_columns = columns;
+        this->rows = rows;
+        this->columns = columns;
         m_ptr = new T[rows*columns];
         for(int i=0; i<rows; i++)  {
             for(int j=0; j<columns;j++)  {
@@ -21,10 +24,10 @@ namespace linAlg  {
     }
 
     template <typename T>
-    Matrix<T>::Matrix(const Matrix<T> &other) : m_columns(other.m_columns), m_rows(other.m_rows)  {
-        m_ptr = new T[other.m_rows * other.m_columns];
-        for (int i=0; i<other.m_rows; i++)  {
-            for (int j=0; j<other.m_columns; j++)  {
+    Matrix<T>::Matrix(const Matrix<T> &other) : columns(other.columns), rows(other.rows)  {
+        m_ptr = new T[other.rows * other.columns];
+        for (int i=0; i<other.rows; i++)  {
+            for (int j=0; j<other.columns; j++)  {
                 (*this)(i,j) = other(i,j);
             }
         }
@@ -36,39 +39,42 @@ namespace linAlg  {
         delete[] m_ptr;
     }
 
-    template <typename T>
-    std::ostream& operator<<(std::ostream &os, const Matrix<T> &mat)  {
-        for(int i=0; i< mat.m_rows; i++)  {
-            os << " | ";
-            for (int j=0; j<mat.m_columns; j++)  {
-                os << mat(i,j) << " | ";
-            }
-            os << "\n";
-        }
-        return os << "\n";
-    }
-
+    
     template <typename T>
     T& Matrix<T>::operator()(const size_t &row, const size_t &column) const {
-        return *(m_ptr+column+(row*m_columns));
+        return *(m_ptr+column+(row*columns));
     }
 
     template <typename T>
     size_t Matrix<T>::getRows() const  {
-        return m_rows;
+        return rows;
     }
 
     template <typename T>
     size_t Matrix<T>::getColumns() const  {
-        return m_columns;
+        return columns;
     }
 
     template <typename T>
     bool Matrix<T>::operator==(const Matrix<T> &other) const  {
-        if(m_rows != other.m_rows || m_columns != other.m_columns)  {
+        if(rows != other.rows || columns != other.columns)  {
             return false;
         }
-    }    
+    }
+    
+    template <typename T>
+    std::ostream& operator<<(std::ostream& os, const Matrix<T>& mat)    {
+        for (int i=0; i<mat.rows; ++i)  {
+            for (int j=0; j<mat.columns; ++j)   {
+                os << mat(i,j);
+            }
+            os << "\n";
+        }
+        return os;
+    }
+
+    
+    
 }
 
 
