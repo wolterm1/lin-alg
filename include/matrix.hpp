@@ -20,18 +20,21 @@ class Matrix {
     template <typename Iter>
     Matrix(const size_t &rows, const size_t &colums, Iter begin, Iter end);
 
+    Matrix(const std::vector<std::vector<T>>& vec);
+
+    Matrix(const size_t &rows, const size_t &columns, const T& value);
+
     Matrix(const size_t &rows, const size_t &columns);
 
     Matrix(const Matrix<T> &other);
-     
+
+
     ~Matrix();
-    
+
     T& operator()(const size_t &rows, const size_t &colums) const;
     size_t getRows() const;
     size_t getColumns() const;
     bool operator==(const Matrix<T> &other) const;
-
-
     /*
     Matrix(Matrix<T>&& other) noexcept;
 
@@ -45,13 +48,13 @@ class Matrix {
     */
     friend std::ostream& operator<< <T> (std::ostream& os, const Matrix<T> &mat);
 
-
     private:
-    T* m_ptr;
+    T* matrixData;
     size_t rows;
     size_t columns;
 };
 
 }
 
-#include "matrix.ipp"
+#include "matrix_operators.ipp"
+#include "matrix_constructors.ipp"
