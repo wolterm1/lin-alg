@@ -1,9 +1,11 @@
 #include <iostream>
 #include <exception>
 #include <string>
+#include <vector>
 
 namespace linAlg {
 
+//template declarations needed for friend operator<< overload function 
 template <typename T>
 class Matrix;
 
@@ -11,32 +13,26 @@ template <typename T>
 std::ostream& operator<<(std::ostream& os, const Matrix<T> &mat);
 
 
-
-
 template <typename T> 
 class Matrix {
-    private:
-    T* m_ptr;//point to start of arrs of pointers, this way memory for matrix can be allocated at runtime
-    size_t rows;
-    size_t columns;
-    
     public:
-    
-    Matrix(const size_t &rows, const size_t &columns);
-    Matrix(const Matrix<T> &other); 
-    ~Matrix();
 
+    template <typename Iter>
+    Matrix(const size_t &rows, const size_t &colums, Iter begin, Iter end);
+
+    Matrix(const size_t &rows, const size_t &columns);
+
+    Matrix(const Matrix<T> &other);
+     
+    ~Matrix();
     
-    template <typename x>
-    friend std::ostream& operator<<(std::ostream& os, const Matrix<x> &Mat);
-    /// @brief Copy-Constructor
-    
-    T& operator()(const size_t &i, const size_t &j) const;
+    T& operator()(const size_t &rows, const size_t &colums) const;
     size_t getRows() const;
     size_t getColumns() const;
     bool operator==(const Matrix<T> &other) const;
+
+
     /*
-    /// @brief Move-Constructor 
     Matrix(Matrix<T>&& other) noexcept;
 
     //mach das hier wie beim ostream overload
@@ -47,12 +43,15 @@ class Matrix {
         swap(first.m_ptr, second.m_ptr);
     }
     */
-
     friend std::ostream& operator<< <T> (std::ostream& os, const Matrix<T> &mat);
+
+
+    private:
+    T* m_ptr;
+    size_t rows;
+    size_t columns;
 };
 
-
 }
-
 
 #include "matrix.ipp"

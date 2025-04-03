@@ -3,12 +3,11 @@
 
 namespace linAlg  {
     
+    
+
 
     template <typename T>
     Matrix<T>::Matrix(const size_t &rows, const size_t &columns)  {
-        if(rows <= 0 || columns <= 0){
-            throw std::invalid_argument("Unable to Create Matrix with Dimensions 0x0");
-        }
         this->rows = rows;
         this->columns = columns;
         m_ptr = new T[rows*columns];
@@ -24,7 +23,30 @@ namespace linAlg  {
     }
 
     template <typename T>
-    Matrix<T>::Matrix(const Matrix<T> &other) : columns(other.columns), rows(other.rows)  {
+    template <typename Iter>
+    void Matrix<T>::printFromIter(Iter begin, Iter end) {
+        std::cout << "printFromIter: \n";
+        for (auto it=begin; it!=end; it++)  {
+            std::cout << *it;
+        }
+        std::cout << std::endl; 
+    }
+
+
+    template <typename T>
+    template <typename Iter>
+    Matrix<T>::Matrix(const size_t &rows, const size_t &columns, Iter begin, Iter end) { 
+        std::cout << "Iterator Constructor: \n";
+        this->rows = rows;
+        this->columns = columns;
+        m_ptr = new T[columns * rows];
+        std::copy(begin, end, m_ptr);
+    }
+
+    template <typename T>
+    Matrix<T>::Matrix(const Matrix<T> &other)   {
+        this->rows = other.rows;
+        this->columns = other.columns;
         m_ptr = new T[other.rows * other.columns];
         for (int i=0; i<other.rows; i++)  {
             for (int j=0; j<other.columns; j++)  {
