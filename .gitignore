@@ -7,3 +7,4 @@
 
 #compiled header dateien
 *.gch	
+*.out

@@ -5,15 +5,12 @@
 
 namespace linAlg {
 
-//template declarations needed for friend operator<< overload function 
-template <typename T>
-class Matrix;
-
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const Matrix<T> &mat);
-
-
+//template constraint 
 template <typename T> 
+concept Numeric = std::is_arithmetic_v<T>;
+
+
+template<Numeric T=int>
 class Matrix {
     public:
 
@@ -28,6 +25,10 @@ class Matrix {
 
     Matrix(const Matrix<T> &other);
 
+    static Matrix<T> createIdentity(const size_t& rows, const size_t& columns);
+
+    Matrix<T>& operator=(const Matrix<T>& other);
+
 
     ~Matrix();
 
@@ -35,23 +36,23 @@ class Matrix {
     size_t getRows() const;
     size_t getColumns() const;
     bool operator==(const Matrix<T> &other) const;
-    /*
-    Matrix(Matrix<T>&& other) noexcept;
-
-    //mach das hier wie beim ostream overload
-    friend void swap(Matrix<T> &first, Matrix<T> &second){
-        using std::swap;
-        swap(first.m_rows, second.m_rows);
-        swap(first.m_columns, second.m_columns);
-        swap(first.m_ptr, second.m_ptr);
+    
+    friend std::ostream& operator<<(std::ostream& os, const Matrix<T>& mat)    {
+        for (int i=0; i<mat.rows; ++i)  {
+            for (int j=0; j<mat.columns; ++j)   {
+                os << mat(i,j) << ", ";
+            }
+            os << "\n";
+        }
+        return os;
     }
-    */
-    friend std::ostream& operator<< <T> (std::ostream& os, const Matrix<T> &mat);
+
 
     private:
     T* matrixData;
     size_t rows;
     size_t columns;
+    void allocateForMatrixData();
 };
 
 }
