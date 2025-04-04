@@ -14,6 +14,8 @@ template<Numeric T=int>
 class Matrix {
     public:
 
+    /*********************** Constructors **********************/
+
     template <typename Iter>
     Matrix(const size_t &rows, const size_t &colums, Iter begin, Iter end);
 
@@ -29,14 +31,16 @@ class Matrix {
 
     Matrix<T>& operator=(Matrix<T>& other);
 
-
     ~Matrix();
 
+
+
+    /*********************** Operators **********************/
+
     T& operator()(const size_t &rows, const size_t &colums) const;
-    size_t getRows() const;
-    size_t getColumns() const;
+
     bool operator==(const Matrix<T> &other) const;
-    
+
     friend std::ostream& operator<<(std::ostream& os, const Matrix<T>& mat)    {
         for (int i=0; i<mat.rows; ++i)  {
             for (int j=0; j<mat.columns; ++j)   {
@@ -46,9 +50,10 @@ class Matrix {
         }
         return os;
     }
+    
+    
 
-
-
+    /*********************** Iterator **********************/
 
     class iterator  {
         public:
@@ -82,6 +87,11 @@ class Matrix {
     }
 
 
+
+    
+
+    size_t getRows() const;
+    size_t getColumns() const;
 
 
     private:
