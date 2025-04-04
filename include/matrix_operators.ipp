@@ -26,8 +26,11 @@ namespace linAlg    {
         }
 
         template <Numeric T> 
-        Matrix<T>& Matrix<T>::operator=(const Matrix<T>& other)    {
-            //!TODO
+        Matrix<T>& Matrix<T>::operator=(Matrix<T>& other)    {
+            this->rows = other.rows;
+            this->columns = other.columns;
+            std::copy(other.begin(), other.end(), matrixData);
+            return *this;
         }
         
 }

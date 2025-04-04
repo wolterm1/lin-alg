@@ -24,8 +24,9 @@ int main() {
                                 {7,8,9}});
     std::cout << "vectorvectorMatrix: \n" <<vecMat << std::endl;
 
-    linAlg::Matrix<int> copy = vecMat;
+    linAlg::Matrix<int> xMat = linAlg::Matrix<int>::createIdentity(4,4);
 
-    itMat = vecMat;
-    
+    xMat = vecMat;
+
+    std::cout << "xMat: \n" <<xMat << std::endl;
 }

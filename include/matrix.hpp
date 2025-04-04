@@ -27,7 +27,7 @@ class Matrix {
 
     static Matrix<T> createIdentity(const size_t& rows, const size_t& columns);
 
-    Matrix<T>& operator=(const Matrix<T>& other);
+    Matrix<T>& operator=(Matrix<T>& other);
 
 
     ~Matrix();
@@ -46,6 +46,42 @@ class Matrix {
         }
         return os;
     }
+
+
+
+
+    class iterator  {
+        public:
+        T* ptr_;
+        iterator(T* ptr) : ptr_(ptr) {}
+        
+        iterator& operator++() {
+            ++ptr_;
+            return *this;
+        }
+        iterator operator++(int) {
+            iterator temp = *this;
+            ++(*this);
+            return temp;
+        }
+
+        bool operator==(const iterator& other) const { return this->ptr_ == other.ptr_; }
+        bool operator!=(const iterator& other) const { return this->ptr_ != other.ptr_; }
+
+       
+        T& operator*() const { return *ptr_; }
+    };
+
+
+
+    iterator begin() {
+        return iterator(matrixData);
+    }
+    iterator end() {
+        return iterator(matrixData + (rows * columns));
+    }
+
+
 
 
     private:
