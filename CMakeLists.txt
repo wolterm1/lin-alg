@@ -1,32 +1,26 @@
-# Mindestversion von CMake
 cmake_minimum_required(VERSION 3.12)
 
-# Projektname und Version
 project(MatrixLinAlgProject VERSION 1.0 LANGUAGES CXX)
 
-# Füge den Include-Ordner hinzu
-# PROJECT_SOURCE_DIR ist eine variable, automatisch folder in der CMakelists liegt.
-include_directories(${PROJECT_SOURCE_DIR}/include)
-
-# Füge die Quell- und Header-Dateien hinzu
-set(SOURCES
-    src/
-)
-
-# Erstelle die ausführbare Datei
-add_executable(execMat ${SOURCES})
-
-
+# ASAN aktivieren
 set(ENABLE_ASAN ON)
 
+# C++20 aktivieren
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-if (ENABLE_ASAN)
-    message(STATUS "AddressSanitizer enabled")
-    set(CMAKE_CXX_FLAGS 
-        "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer -g"
-        )
-    set(CMAKE_LINKER_FLAGS
-        "${CMAKE_LINKER_FLAGS} -fsanitize=address"
-        )
+# Quellcode-Dateien automatisch einlesen
+file(GLOB_RECURSE SOURCES src/*.cpp)
+
+# Executable erstellen
+add_executable(a ${SOURCES})
+
+# Include-Verzeichnisse angeben
+target_include_directories(a PRIVATE ${PROJECT_SOURCE_DIR}/include)
+
+# Compiler-Optionen
+if(ENABLE_ASAN)
+    target_compile_options(a PRIVATE -fsanitize=address)
+    target_link_options(a PRIVATE -fsanitize=address)
 endif()
 
