@@ -55,39 +55,59 @@ class Matrix {
 
     /*********************** Iterator **********************/
 
-    class iterator  {
-        public:
-        T* ptr_;
-        iterator(T* ptr) : ptr_(ptr) {}
+    struct Iterator   {
+        using iterator_concept = std::contiguous_iterator_tag;
+        using iterator_category = std::random_access_iterator_tag;
+        using difference_type  = std::ptrdiff_t;
+        using value_type = T;
+        using pointer = T*;
+        using reference = T&;
+
+
+        Iterator(pointer p = nullptr) : ptr(p) {}
         
-        iterator& operator++() {
-            ++ptr_;
+        pointer operator->() const { return ptr; }
+        
+        //inherited interface from std::bidirectional_iterator
+        reference operator*() const { return *ptr; }
+
+        Iterator& operator++()  { 
+            ++ptr; 
             return *this;
         }
-        iterator operator++(int) {
-            iterator temp = *this;
+
+        Iterator operator++(int)  {
+            auto tmp = *this;
             ++(*this);
-            return temp;
+            return tmp;
         }
 
-        bool operator==(const iterator& other) const { return this->ptr_ == other.ptr_; }
-        bool operator!=(const iterator& other) const { return this->ptr_ != other.ptr_; }
+        Iterator& operator--() { 
+            --ptr; 
+            return *this;
+        }
 
-       
-        T& operator*() const { return *ptr_; }
+        Iterator operator--(int) {
+            auto tmp = *this;
+            --(*this);
+            return tmp;
+        }
+
+        Iterator& operator+=(difference_type n) { ptr += n; return *this; }
+        Iterator operator+(difference_type n) const { return Iterator(ptr + n); } 
+        friend Iterator operator+(difference_type n, const Iterator j)  { return n + j; }
+        Iterator& operator-=(const difference_type n) { ptr -= n; return *this; }
+        difference_type operator-(const Iterator j) const { return ptr - j.ptr; }
+        Iterator operator-(const difference_type n) const { return Iterator(ptr - n); }
+        reference operator[](difference_type n) const { return *(ptr + n); }
+        auto operator<=>(const Iterator&) const = default;
+
+        private:
+        pointer ptr;
     };
 
-
-
-    iterator begin() {
-        return iterator(matrixData);
-    }
-    iterator end() {
-        return iterator(matrixData + (rows * columns));
-    }
-
-
-
+    Iterator begin()  { return Iterator(matrixData); }
+    Iterator end()  { return Iterator(matrixData + columns * rows); }
     
 
     size_t getRows() const;

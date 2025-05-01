@@ -29,4 +29,9 @@ int main() {
     xMat = vecMat;
 
     std::cout << "xMat: \n" <<xMat << std::endl;
+
+
+    for (auto el : xMat) {
+        std::cout << el;
+    }
 }
