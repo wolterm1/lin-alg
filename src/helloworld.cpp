@@ -16,7 +16,7 @@ int main() {
 
     std::unordered_multiset<long long> multiset({213,23,4,345});
     linAlg::Matrix<int> itMat(2, 4, multiset.begin(), multiset.end());
-    std::cout<< "ContainerIterableMatrix: \n" << itMat << std::endl;
+    std::cout<< "Constructed Matrix from begin and end iterators from multiset {213,23,4,345} \n" << itMat << std::endl;
 
 
     linAlg::Matrix<int> vecMat({{1,2,3},
