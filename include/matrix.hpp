@@ -58,10 +58,7 @@ class Matrix {
         }
         return os;
     }
-
-    Iterator begin()  { return Iterator(matrixData); }
-    Iterator end()  { return Iterator(matrixData + columns * rows); }
-    
+   
 
     size_t getRows() const;
     size_t getColumns() const;
@@ -121,6 +118,9 @@ class Matrix {
         private:
         pointer ptr;
     };
+  Iterator begin()  { return Iterator(matrixData); }
+  Iterator end()  { return Iterator(matrixData + columns * rows); }
+
 };
 
 }
