@@ -25,13 +25,15 @@ int main() {
     std::cout << "vectorvectorMatrix: \n" <<vecMat << std::endl;
 
     linAlg::Matrix<int> xMat = linAlg::Matrix<int>::createIdentity(4,4);
-
-    xMat = vecMat;
-
     std::cout << "xMat: \n" <<xMat << std::endl;
 
-
+    std::cout << "testing iterator, range based for-loop: " << std::endl;
     for (auto el : xMat) {
         std::cout << el;
-    }
+    } std::cout << "\n" << std::endl;
+
+    std::cout << "testing move assignment operator" << std::endl;
+    linAlg::Matrix<int> tmpMat = linAlg::Matrix<int>::createIdentity(4,4);
+    linAlg::Matrix<int> targetMat = std::move(tmpMat);
+    std::cout << "moved Mat:" << tmpMat << "\n targetMat" << targetMat << std::endl;
 }
