@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.12)
 
-project(MatrixLinAlgProject VERSION 1.0 LANGUAGES CXX)
+project(
+  MatrixLinAlgProject
+  VERSION 1.0
+  LANGUAGES CXX)
 
 # ASAN aktivieren
 set(ENABLE_ASAN ON)
@@ -16,14 +19,15 @@ file(GLOB_RECURSE TESTS tests/*.cpp)
 # Executable erstellen
 add_executable(matrix ${SOURCES})
 
-add_executable(matrix_iter ${TESTS})
+add_executable(matrix_iter tests/matrix_iterator_test.cpp)
+
+add_executable(matrix_operator_test tests/operators.cpp)
 
 # Include-Verzeichnisse angeben
 target_include_directories(matrix PRIVATE ${PROJECT_SOURCE_DIR}/include)
 
 # Compiler-Optionen
 if(ENABLE_ASAN)
-    target_compile_options(matrix PRIVATE -fsanitize=address)
-    target_link_options(matrix PRIVATE -fsanitize=address)
+  target_compile_options(matrix PRIVATE -fsanitize=address)
+  target_link_options(matrix PRIVATE -fsanitize=address)
 endif()
-
