@@ -272,6 +272,20 @@ Matrix<T> &Matrix<T>::operator=(Matrix<T> other) {
 }
 
 template <Numeric T>
+Matrix<T> Matrix<T>::operator+(const Matrix<T> &other) {
+    if (rows != other.rows || columns != other.columns) {
+        throw(std::exception());
+    }
+    for (int i=0; i<rows; ++i)  {
+        for (int j=0; j<columns; ++j)  {
+            (*this)(i,j) += other(i,j);
+        }
+    }
+    return *this;
+
+}
+
+template <Numeric T>
 Matrix<T> &Matrix<T>::operator=(Matrix<T> &&other) noexcept {
     matrixData = other.matrixData;
     rows = other.rows;
