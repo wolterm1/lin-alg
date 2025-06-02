@@ -48,10 +48,11 @@ class Matrix {
 
     bool operator==(const Matrix<T> &other) const;
 
-    Matrix<T> operator+(const Matrix<T> &other);
+    [[nodiscard]]
+    Matrix<T> operator+(const Matrix<T> &other) const;
 
     Matrix<T> &operator+=(const Matrix<T> &other);
-
+    [[nodiscard]]
     Matrix<T> operator*(const Matrix<T> &other);
 
     Matrix<T> operator*=(const Matrix<T> &other);
@@ -72,6 +73,8 @@ class Matrix {
     }
 
     void swap(Matrix<T> &other) noexcept;
+
+    friend void checkForEqualDimensions<>(Matrix<T> first, Matrix<T> second);
 
     /*********************** Iterator **********************/
 
@@ -272,17 +275,22 @@ Matrix<T> &Matrix<T>::operator=(Matrix<T> other) {
 }
 
 template <Numeric T>
-Matrix<T> Matrix<T>::operator+(const Matrix<T> &other) {
-    if (rows != other.rows || columns != other.columns) {
-        throw(std::exception());
-    }
-    for (int i=0; i<rows; ++i)  {
-        for (int j=0; j<columns; ++j)  {
-            (*this)(i,j) += other(i,j);
+Matrix<T> Matrix<T>::operator+(const Matrix<T> &other) const {
+    checkForEqualDimensions(*this, other);
+    Matrix<T> result(*this);
+    result += other;
+    return result;
+}
+
+template <Numeric T>
+Matrix<T> &Matrix<T>::operator+=(const Matrix<T> &other) {
+    checkForEqualDimensions(*this, other);
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < columns; ++j) {
+            (*this)(i, j) += other(i, j);
         }
     }
     return *this;
-
 }
 
 template <Numeric T>
@@ -294,4 +302,16 @@ Matrix<T> &Matrix<T>::operator=(Matrix<T> &&other) noexcept {
     other.rows = 0;
     other.columns = 0;
 }
+
+template <Numeric T>
+void checkForEqualDimensions(Matrix<T> first, Matrix<T> second) {
+    if (first.rows != second.rows || first.columns != second.columns) {
+        std::string msg = std::to_string(first.rows) + "x" + std::to_string(first.columns) +
+                          " and " + std::to_string(second.rows) + "x" +
+                          std::to_string(second.columns);
+        throw std::runtime_error(
+            "using incompatible matrix dimension for Matrix::operator+(): dimensions: " + msg);
+    }
+}
+
 }  // namespace linAlg

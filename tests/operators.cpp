@@ -19,7 +19,13 @@ int main() {
 
     std::cout << "\nadding Identity to floatMatrix" << '\n';
 
-    std::cout << base + Matrix<float>::createIdentity(3,3) << '\n';
+    std::cout << base + Matrix<float>::createIdentity(3, 3) << '\n';
 
+    std::cout << "operator++ on two matrices with incompatible dimensions: " << '\n';
+    try {
+        base + Matrix<float>::createIdentity(4, 5);
+    } catch(std::exception& e) {
+        std::cerr << e.what() << '\n';
+    }
     std::cout << "\ndone" << '\n';
 }
