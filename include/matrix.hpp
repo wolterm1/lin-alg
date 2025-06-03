@@ -40,7 +40,7 @@ class Matrix {
 
     /*********************** Operators **********************/
 
-    Matrix<T> &operator=(Matrix<T> other);
+    Matrix<T> &operator=(const Matrix<T> &other);
 
     Matrix<T> &operator=(Matrix<T> &&other) noexcept;
 
@@ -52,10 +52,16 @@ class Matrix {
     Matrix<T> operator+(const Matrix<T> &other) const;
 
     Matrix<T> &operator+=(const Matrix<T> &other);
-    [[nodiscard]]
-    Matrix<T> operator*(const Matrix<T> &other);
 
-    Matrix<T> operator*=(const Matrix<T> &other);
+    [[nodiscard]]
+    Matrix<T> operator*(const T &scalar) const;
+
+    Matrix<T> &operator*=(const T &scalar);
+
+    [[nodiscard]]
+    Matrix<T> operator*(const Matrix<T> &other) const;
+
+    Matrix<T> &operator*=(const Matrix<T> &other);
 
     size_t getRows() const;
     size_t getColumns() const;
@@ -75,6 +81,8 @@ class Matrix {
     void swap(Matrix<T> &other) noexcept;
 
     friend void checkForEqualDimensions<>(Matrix<T> first, Matrix<T> second);
+
+    friend void checkEqualColumnToRow<>(Matrix<T> first, Matrix<T> second);
 
     /*********************** Iterator **********************/
 
@@ -134,12 +142,11 @@ class Matrix {
     };
     Iterator begin() { return Iterator(matrixData); }
     Iterator end() { return Iterator(matrixData + (columns * rows)); }
-};
+};  // class declaration
 
 }  // namespace linAlg
 
-/**************************** Constructors
- * ****************************************/
+/**************************** Constructors ****************************************/
 
 namespace linAlg {
 
@@ -267,19 +274,20 @@ void Matrix<T>::swap(Matrix<T> &other) noexcept {
 }
 
 template <Numeric T>
-Matrix<T> &Matrix<T>::operator=(Matrix<T> other) {
-    // copy and swap idiom, param by value to avoid manually creating copy and avoid mutating *this
-    // when creating copy fails
-    swap(other);
+Matrix<T> &Matrix<T>::operator=(const Matrix<T> &other) {
+    // copy and swap idiom
+    if (this != &other) {
+        Matrix<T> copy(other);
+        swap(copy);
+    }
     return *this;
 }
 
 template <Numeric T>
 Matrix<T> Matrix<T>::operator+(const Matrix<T> &other) const {
-    checkForEqualDimensions(*this, other);
-    Matrix<T> result(*this);
-    result += other;
-    return result;
+    Matrix<T> copy(*this);
+    copy += other;
+    return copy;
 }
 
 template <Numeric T>
@@ -301,6 +309,58 @@ Matrix<T> &Matrix<T>::operator=(Matrix<T> &&other) noexcept {
     other.matrixData = nullptr;
     other.rows = 0;
     other.columns = 0;
+    return *this;
+}
+
+template <Numeric T>
+Matrix<T> Matrix<T>::operator*(const Matrix<T> &other) const {
+    Matrix<T> copy(*this);
+    copy *= other;
+    return copy;
+}
+
+template <Numeric T>
+Matrix<T> &Matrix<T>::operator*=(const Matrix<T> &other) {
+    checkEqualColumnToRow(*this, other);
+    Matrix<T> tempResults(rows, other.columns, 0);
+    for (int i = 0; i < tempResults.rows; ++i) {
+        for (int j = 0; j < tempResults.columns; ++j) {
+            for (int k = 0; k < columns; ++k) {
+                tempResults(i, j) += (*this)(i, k) * other(k, j);
+            }
+        }
+    }
+    *this = std::move(tempResults);
+    return *this;
+}
+
+
+template <Numeric T>
+Matrix<T> Matrix<T>::operator*(const T &scalar) const {
+    Matrix<T> copy(*this);
+    copy *= scalar;
+    return copy;
+}
+
+template <Numeric T>
+Matrix<T> &Matrix<T>::operator*=(const T &scalar) {
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < columns; ++j) {
+            (*this)(i, j) *= scalar;
+        }
+    }
+    return *this;
+}
+
+template <Numeric T>
+void checkEqualColumnToRow(Matrix<T> first, Matrix<T> second) {
+    if (first.columns != second.rows) {
+        std::string msg = std::to_string(first.rows) + "x" + std::to_string(first.columns) +
+                          " and " + std::to_string(second.rows) + "x" +
+                          std::to_string(second.columns);
+        throw std::runtime_error(
+            "using incompatible matrix dimension for Matrix::operator*(): dimensions: " + msg);
+    }
 }
 
 template <Numeric T>
