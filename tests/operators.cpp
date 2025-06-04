@@ -22,13 +22,7 @@ int main() {
     base += Matrix<float>::createIdentity(3, 3);
     std::cout << base << '\n';
 
-    std::cout << "operator+ on two matrices with incompatible dimensions: " << '\n';
-    try {
-        base += Matrix<float>::createIdentity(4, 5);
-    } catch (std::exception& e) {
-        std::cerr << e.what() << '\n';
-    }
-    std::cout << "\ndone" << '\n';
+    std::cout << Matrix<int>::createIdentity(3,3) - Matrix<int>::createIdentity(3,3) << '\n'; 
 
     Matrix<int> first_operand({{2, 3, 4}, {2, 0, 4}, {1, 5, 2}});
     Matrix<int> second_operand({{2, 1, 1}, {2, 3, 1}, {2, 3, 1}});
@@ -37,12 +31,6 @@ int main() {
 
     std::cout << first_operand << '\n';
 
-    std::cout << "multipliyng again"<< first_operand * first_operand << '\n';
-
-
-
-    std::cout << "scalar multiplication: Identity*100000\n "<< Matrix<long long>::createIdentity(4,4) * 100000  << '\n';
-    
-   
-
+    std::cout << "scalar multiplication: Identity*100000\n "
+              << Matrix<long long>::createIdentity(4, 4) * 100000 << '\n';
 }

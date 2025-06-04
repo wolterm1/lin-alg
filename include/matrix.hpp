@@ -54,6 +54,11 @@ class Matrix {
     Matrix<T> &operator+=(const Matrix<T> &other);
 
     [[nodiscard]]
+    Matrix<T> operator-(const Matrix<T> &other) const;
+
+    Matrix<T> &operator-=(const Matrix<T> &other);
+
+    [[nodiscard]]
     Matrix<T> operator*(const T &scalar) const;
 
     Matrix<T> &operator*=(const T &scalar);
@@ -302,6 +307,24 @@ Matrix<T> &Matrix<T>::operator+=(const Matrix<T> &other) {
 }
 
 template <Numeric T>
+Matrix<T> Matrix<T>::operator-(const Matrix<T> &other) const {
+    Matrix<T> copy(*this);
+    copy -= other;
+    return copy;
+}
+
+template <Numeric T>
+Matrix<T> &Matrix<T>::operator-=(const Matrix<T> &other) {
+    checkForEqualDimensions(*this, other);
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < columns; ++j) {
+            (*this)(i, j) -= other(i, j);
+        }
+    }
+    return *this;
+}
+
+template <Numeric T>
 Matrix<T> &Matrix<T>::operator=(Matrix<T> &&other) noexcept {
     matrixData = other.matrixData;
     rows = other.rows;
@@ -333,7 +356,6 @@ Matrix<T> &Matrix<T>::operator*=(const Matrix<T> &other) {
     *this = std::move(tempResults);
     return *this;
 }
-
 
 template <Numeric T>
 Matrix<T> Matrix<T>::operator*(const T &scalar) const {
