@@ -1,16 +1,12 @@
 #pragma once
 
+#include "concepts.hpp"
 #include <iostream>
 #include <vector>
 
 namespace linAlg {
 
-//  template constraint
-template <typename T>
-concept Numeric = std::is_arithmetic_v<T>;
-
 template <Numeric T = int>
-
 class Matrix {
    private:
     T *matrixData;
@@ -62,6 +58,11 @@ class Matrix {
     Matrix<T> operator*(const T &scalar) const;
 
     Matrix<T> &operator*=(const T &scalar);
+
+    [[nodiscard]]
+    Matrix<T> operator/(const T &scalar) const;
+
+    Matrix<T> &operator/=(const T &scalar);
 
     [[nodiscard]]
     Matrix<T> operator*(const Matrix<T> &other) const;
@@ -372,6 +373,23 @@ Matrix<T> &Matrix<T>::operator*=(const T &scalar) {
         }
     }
     return *this;
+}
+
+template <Numeric T>
+Matrix<T> &Matrix<T>::operator/=(const T &scalar) {
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < columns; ++j) {
+            (*this)(i, j) /= scalar;
+        }
+    }
+    return *this;
+}
+
+template <Numeric T>
+Matrix<T> Matrix<T>::operator/(const T &scalar) const {
+    Matrix<T> copy(*this);
+    copy /= scalar;
+    return copy;
 }
 
 template <Numeric T>
