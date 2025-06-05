@@ -26,19 +26,20 @@ class Matrix {
 
     Matrix(const size_t &rows, const size_t &columns);
 
-    Matrix(const Matrix<T> &other);
 
+    // rule of five
+    Matrix(const Matrix<T> &other);
     Matrix(Matrix<T> &&other) noexcept;
+    Matrix<T> &operator=(const Matrix<T> &other);
+    Matrix<T> &operator=(Matrix<T> &&other) noexcept;
+    ~Matrix();
 
     static auto createIdentity(const size_t &rows, const size_t &columns) -> Matrix<T>;
 
-    ~Matrix();
 
     /*********************** Operators **********************/
 
-    Matrix<T> &operator=(const Matrix<T> &other);
 
-    Matrix<T> &operator=(Matrix<T> &&other) noexcept;
 
     T &operator()(const size_t &p_row, const size_t &column) const;
 
@@ -219,8 +220,7 @@ Matrix<T>::Matrix(const Matrix<T> &other) : rows(other.rows), columns(other.colu
 }
 
 template <Numeric T>
-Matrix<T>::Matrix(Matrix<T> &&other) noexcept : rows(other.rows), columns(other.columns) {
-    matrixData = other.matrixData;
+Matrix<T>::Matrix(Matrix<T> &&other) noexcept :  matrixData(other.matrixData), rows(other.rows), columns(other.columns) {
     other.matrixData = nullptr;
     other.rows = 0;
     other.columns = 0;
@@ -327,12 +327,10 @@ Matrix<T> &Matrix<T>::operator-=(const Matrix<T> &other) {
 
 template <Numeric T>
 Matrix<T> &Matrix<T>::operator=(Matrix<T> &&other) noexcept {
-    matrixData = other.matrixData;
-    rows = other.rows;
-    columns = other.columns;
-    other.matrixData = nullptr;
-    other.rows = 0;
-    other.columns = 0;
+    if (this == &other) {
+        return *this;
+    }
+    swap(other);
     return *this;
 }
 
