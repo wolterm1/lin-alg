@@ -14,6 +14,12 @@ class Vector;
 template <Numeric T>
 std::ostream& operator<<(std::ostream& outputstream, const Vector<T>& vec);
 
+template <Numeric T>
+T dot(const Vector<T>& firstVec, const Vector<T>& secondVec);
+
+template <Numeric T>
+Vector<T> cross(const Vector<T>& firstVec, const Vector<T>& secondVec);
+
 template <Numeric T = int>
 class Vector {
    public:
@@ -36,13 +42,18 @@ class Vector {
     Vector<T>& operator*=(const T& scalar);
     Vector<T> operator*(const T& scalar);
 
+    friend T dot <T>(const Vector<T>& first, const Vector<T>& other);
+    friend Vector<T> cross <T>(const Vector<T>& first, const Vector<T>& second);
+
     friend std::ostream& operator<< <T>(std::ostream& outputstream, const Vector<T>& vec);
+
     void swap(Vector<T>&) noexcept;
 
    private:
     T* vecData;
     size_t size;
     void allocateForVecData();
+    bool checkEqualDimensions(const Vector<T>& other) const;
 };
 
 template <Numeric T>
@@ -164,6 +175,19 @@ void Vector<T>::allocateForVecData() {
 }
 
 template <Numeric T>
+void Vector<T>::swap(Vector<T>& other) noexcept {
+    std::swap(vecData, other.vecData);
+    std::swap(size, other.size);
+}
+
+template <Numeric T>
+bool Vector<T>::checkEqualDimensions(const Vector<T>& other) const {
+    return size == other.size; 
+}
+
+/***** friend functons *****/
+
+template <Numeric T>
 std::ostream& operator<<(std::ostream& outputstream, const Vector<T>& vec) {
     for (int i = 0; i < vec.size; i++) {
         outputstream << vec[i] << ", ";
@@ -173,9 +197,14 @@ std::ostream& operator<<(std::ostream& outputstream, const Vector<T>& vec) {
 }
 
 template <Numeric T>
-void Vector<T>::swap(Vector<T>& other) noexcept {
-    std::swap(vecData, other.vecData);
-    std::swap(size, other.size);
+T dot(const Vector<T>& firstVec, const Vector<T>& secondVec) {
+    firstVec.checkEqualDimensions(secondVec);
+    T result = 0;
+    for (int i = 0; i < firstVec.size; ++i) {
+        result += firstVec[i] * secondVec[i];
+    }
+
+    return result;
 }
 
 }  // namespace linAlg

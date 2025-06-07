@@ -1,17 +1,24 @@
-#include <vector>
 #include "../include/vector.hpp"
+
+#include <cassert>
+#include <vector>
 
 using linAlg::Vector;
 
+void testDot() {
+    Vector<int> firstVec({1, 2, 3});
+    Vector<int> secondVec({2, 4, 8});
+
+    assert(dot(firstVec, secondVec) == 34);
+}
+
 int main() {
+    Vector<int> firstVec({1, 2, 3});
+    Vector<int> secondVec({2, 4, 8});
 
-    Vector<float> vecFl(std::vector<float>({1,2,3,4})) ;
+    Vector<int> mov(firstVec + secondVec);
 
-    std::cout << vecFl;
+    std::cout << mov;
 
-
-    std::cout << "move constructing new vector with:" <<  vecFl;
-    Vector<float> movedRes = std::move(vecFl);
-    std::cout << "Move Constructr result: " << movedRes << "moved from vecFl:" <<  vecFl;
-    
+    testDot();
 }
