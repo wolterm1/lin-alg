@@ -18,7 +18,10 @@ template <Numeric T>
 T dot(const Vector<T>& firstVec, const Vector<T>& secondVec);
 
 template <Numeric T>
-Vector<T> cross(const Vector<T>& firstVec, const Vector<T>& secondVec);
+Vector<T> cross(const Vector<T>& a, const Vector<T>& b);
+
+template <Numeric T>
+bool checkEqualDimensions(const Vector<T>& first, const Vector<T>& second);
 
 template <Numeric T = int>
 class Vector {
@@ -31,9 +34,9 @@ class Vector {
     ~Vector();
 
     explicit Vector(const size_t& p_size);
-    explicit Vector(const std::vector<T>& vec);
+    Vector(const std::initializer_list<T>& init);
 
-    bool operator==(const Vector<T>& other);
+    bool operator==(const Vector<T>& other) const;
     T& operator[](const size_t& pos) const;
     Vector<T>& operator+=(const Vector<T>& other);
     Vector<T> operator+(const Vector<T>& other);
@@ -42,18 +45,15 @@ class Vector {
     Vector<T>& operator*=(const T& scalar);
     Vector<T> operator*(const T& scalar);
 
-    friend T dot <T>(const Vector<T>& first, const Vector<T>& other);
-    friend Vector<T> cross <T>(const Vector<T>& first, const Vector<T>& second);
-
     friend std::ostream& operator<< <T>(std::ostream& outputstream, const Vector<T>& vec);
 
     void swap(Vector<T>&) noexcept;
+    size_t getSize() const;
 
    private:
     T* vecData;
     size_t size;
     void allocateForVecData();
-    bool checkEqualDimensions(const Vector<T>& other) const;
 };
 
 template <Numeric T>
@@ -62,11 +62,9 @@ Vector<T>::Vector(const size_t& p_size) : size(p_size) {
 }
 
 template <Numeric T>
-Vector<T>::Vector(const std::vector<T>& vec) : size(vec.size()) {
+Vector<T>::Vector(const std::initializer_list<T>& init) : size(init.size()) {
     allocateForVecData();
-    for (int i = 0; i < size; ++i) {
-        (*this)[i] = vec[i];
-    }
+    std::copy(init.begin(), init.end(), vecData);
 }
 
 template <Numeric T>
@@ -102,7 +100,7 @@ Vector<T>& Vector<T>::operator=(Vector<T>&& other) noexcept {
 }
 
 template <Numeric T>
-bool Vector<T>::operator==(const Vector<T>& other) {
+bool Vector<T>::operator==(const Vector<T>& other) const {
     if (size != other.size) {
         return false;
     }
@@ -181,11 +179,16 @@ void Vector<T>::swap(Vector<T>& other) noexcept {
 }
 
 template <Numeric T>
-bool Vector<T>::checkEqualDimensions(const Vector<T>& other) const {
-    return size == other.size; 
+size_t Vector<T>::getSize() const {
+    return size;
 }
 
 /***** friend functons *****/
+
+template <Numeric T>
+bool checkEqualDimensions(const Vector<T>& first, const Vector<T>& second) {
+    return first.getSize() == second.getSize();
+}
 
 template <Numeric T>
 std::ostream& operator<<(std::ostream& outputstream, const Vector<T>& vec) {
@@ -198,13 +201,24 @@ std::ostream& operator<<(std::ostream& outputstream, const Vector<T>& vec) {
 
 template <Numeric T>
 T dot(const Vector<T>& firstVec, const Vector<T>& secondVec) {
-    firstVec.checkEqualDimensions(secondVec);
+    checkEqualDimensions(firstVec, secondVec);
     T result = 0;
-    for (int i = 0; i < firstVec.size; ++i) {
+    for (int i = 0; i < firstVec.getSize(); ++i) {
         result += firstVec[i] * secondVec[i];
     }
 
     return result;
+}
+
+template <Numeric T>
+Vector<T> cross(const Vector<T>& a, const Vector<T>& b) {
+    if (a.getSize() != 3 || b.getSize() != 3) {
+        std::string msg = "Wrong dimensions for Crossproduct: " + std::to_string(a.getSize()) +
+                          "x" + std::to_string(b.getSize());
+        throw std::invalid_argument(msg);
+    }
+    return Vector<T>({(a[1] * b[2]) - (a[2] * b[1]), (a[2] * b[0]) - (a[0] * b[2]),
+                      (a[0] * b[1]) - (a[1] * b[0])});
 }
 
 }  // namespace linAlg

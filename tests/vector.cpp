@@ -12,13 +12,26 @@ void testDot() {
     assert(dot(firstVec, secondVec) == 34);
 }
 
-int main() {
+void testCross() {
     Vector<int> firstVec({1, 2, 3});
     Vector<int> secondVec({2, 4, 8});
 
-    Vector<int> mov(firstVec + secondVec);
+    Vector<int> crossVector = cross(firstVec, secondVec);
+    Vector<int> expected({4, -2, 0});
 
+    assert(crossVector == expected);
+}
+
+int main() {
+    testDot();
+    testCross();
+
+    Vector<int> firstVec({1, 2, 3});
+    Vector<int> secondVec({2, 4, 8});
+    Vector<int> mov(firstVec + secondVec);
     std::cout << mov;
 
-    testDot();
+    Vector<int> result = cross(Vector<int>({1, 2, 3}), Vector<int>{2, 4, 8});
+    std::cout << result;
+    
 }
