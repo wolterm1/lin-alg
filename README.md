@@ -13,6 +13,9 @@ Dieses Projekt umfasst:
   - Invertierung von Matrizen
   - Lösen linearer Gleichungssysteme
   - Iterator für Kompatibilität mit STL-Algorithmen
+- Vektorklasse
+- Matrix-Vektor-Multiplikation
+
 ## 🧠 Motivation
 
 Dieses Projekt dient dem Verständnis und dem Üben von C++ und linearen Algebra-Konzepten. Der Code ist nicht optimiert und gilt nur dem Interesse, theoretischen Grundlagen praktisch umzusetzen.
