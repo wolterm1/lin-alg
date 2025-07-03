@@ -5,17 +5,17 @@ Ein C++-Projekt zur Demonstration grundlegender Operationen aus der linearen Alg
 ## 📌 Inhalt
 
 Dieses Projekt umfasst:
-
-- Matrixaddition
-- Matrixmultiplikation
-- Transposition
-- Berechnung der Determinante
-- Invertierung von Matrizen
-- Lösen linearer Gleichungssysteme
-
+- Matrixklasse:
+  - Matrixaddition
+  - Matrixmultiplikation
+  - Transposition
+  - Berechnung der Determinante
+  - Invertierung von Matrizen
+  - Lösen linearer Gleichungssysteme
+  - Iterator für Kompatibilität mit STL-Algorithmen
 ## 🧠 Motivation
 
-Dieses Projekt dient dem Üben von C++ und linearen Algebra-Konzepten. Es richtet sich an Studierende oder Interessierte, die die theoretischen Grundlagen praktisch umsetzen möchten.
+Dieses Projekt dient dem Verständnis und dem Üben von C++ und linearen Algebra-Konzepten. Der Code ist nicht optimiert und gilt nur dem Interesse, theoretischen Grundlagen praktisch umzusetzen.
 
 ## ⚙️ Build & Installation
 
@@ -27,9 +27,9 @@ Dieses Projekt dient dem Üben von C++ und linearen Algebra-Konzepten. Es richte
 ### Build-Schritte
 
 ```bash
-git clone https://github.com/wolterm1/Matrix-LinAlg.git
-cd Matrix-LinAlg
+git clone https://github.com/wolterm1/linAlg.git
+cd linAlg
 mkdir build
 cd build
-cmake ..
-make
+cmake -S . -B build
+cmake --build build
