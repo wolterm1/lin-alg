@@ -22,7 +22,7 @@ Dieses Projekt dient dem Verständnis und dem Üben von C++ und linearen Algebra
 ### Voraussetzungen
 
 - CMake ≥ 3.10
-- Ein C++17-kompatibler Compiler (z. B. g++, clang++, MSVC)
+- C++20-kompatible Compiler ❗
 
 ### Build-Schritte
 
