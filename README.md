@@ -1,6 +1,5 @@
-<<<<<<< HEAD
+
 # Matrix/LinAlg
-######Hallo
 =======
 # linAlg
 Ein C++-Projekt zur Demonstration grundlegender Operationen aus der linearen Algebra — insbesondere auf Matrizen. Der Fokus liegt auf der manuellen Implementierung mathematischer Operationen zur besseren Nachvollziehbarkeit.
