@@ -3,7 +3,7 @@
 #include "../include/matrix.hpp"
 
 int main() {
-    using linAlg::Matrix;
+    using lin::Matrix;
 
     std::cout << "testing operators" << '\n';
     Matrix<float> base(3, 3, 1.5);

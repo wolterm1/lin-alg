@@ -19,3 +19,6 @@ WarningsAsErrors: "*"
 
 CheckOptions:
   - { key: readability-identifier-naming.MacroDefinitionCase,    value: UPPER_CASE }
+
+
+

@@ -1,10 +1,17 @@
 #pragma once
 
 #include <type_traits>
+#include <concepts>
 
-namespace linAlg { 
+namespace lin {
 
-template<typename T>
+template <typename T>
 concept Numeric = std::is_arithmetic_v<T>;
 
-} // namespace linAlg
+template <typename T>
+concept TensorElement  = requires(T a, T b) {
+  { a + b } -> std::convertible_to<T>;
+  { a == b } -> std::convertible_to<bool>;
+};
+
+}  // namespace lin

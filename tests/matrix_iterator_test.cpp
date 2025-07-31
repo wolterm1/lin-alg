@@ -16,5 +16,5 @@ void test_iterator_concepts() {
 
 
 int main()  {
-    test_iterator_concepts<linAlg::Matrix<int>::Iterator>();
+    test_iterator_concepts<lin::Matrix<int>::Iterator>();
 }
