@@ -21,7 +21,7 @@ add_executable(matrix_operator_test tests/operators.cpp)
 
 add_executable(vector_test tests/vector_tests.cpp)
 
-add_executable(nn_test src/nntest.cpp neural_net/net.cpp)
+add_executable(nn_test src/nntest.cpp neural_net/net.cpp neural_net/helper.cpp)
 
 set(MY_TARGETS matrix matrix_iter matrix_operator_test vector_test nn_test)
 
