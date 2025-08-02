@@ -15,6 +15,17 @@ void checkEqualMatrixColumnsToVectorSize(const Matrix<T> &mat, const Vector<X> &
 }
 
 template <Numeric T, TensorElement X>
+void checkEqualVectorSizeToMatrixRows(const Vector<X>& vec, const Matrix<T>& mat) {
+  if (mat.getRows() != vec.getSize()) {
+    std::string msg =
+        "Wrong dimensions for Matrix*Vector:\n MatrixRows:" + std::to_string(mat.getColumns()) +
+        "\nVector size:\n" + std::to_string(vec.getSize());
+    throw std::invalid_argument(msg);
+  }
+}
+
+
+template <Numeric T, TensorElement X>
 void checkEqualVectorSize(const Vector<T> &first, const Vector<X> &second) {
   if (first.getSize() != 3 || second.getSize() != 3) {
     std::string msg = "Wrong dimensions for Crossproduct: " + std::to_string(first.getSize()) +
@@ -40,6 +51,8 @@ T dot(const Vector<T> &firstVec, const Vector<T> &secondVec) {
   return result;
 }
 
+
+//Matrix * Vector
 template <Numeric T>
 Vector<T> operator*(const Matrix<T> &mat, const Vector<T> &vec) {
   // Matrix.rows has to be equal to vector length, resulting vector has matrix
@@ -50,6 +63,21 @@ Vector<T> operator*(const Matrix<T> &mat, const Vector<T> &vec) {
     T tmp = 0;
     for (int j = 0; j < mat.getColumns(); ++j) {
       tmp += mat(i, j) * vec[j];
+    }
+    result[i] = tmp;
+  }
+  return result;
+}
+
+//Vector * Matrix
+template <Numeric T>
+Vector<T> operator*(const Vector<T> &vec, const Matrix<T> &mat) {
+  checkEqualVectorSizeToMatrixRows(vec, mat);
+  Vector<T> result(mat.getColumns());
+  for (size_t i = 0; i<mat.getColumns(); ++i) {
+    T tmp = 0;
+    for (size_t j = 0; j < mat.getRows(); ++j) {
+      tmp += vec[j] * mat(j,i);
     }
     result[i] = tmp;
   }

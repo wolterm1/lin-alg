@@ -29,12 +29,27 @@ void testMatrixVectorMult() {
       {1, 2, 3},
       {4, 5, 6}
   });
-  std::cout << mat;
   Vector<int> vec({1, 0, -1});
 
   Vector<int> result = mat * vec;
   Vector<int> expected({-2, -2});
 
+  assert(result == expected);
+}
+
+void testVectorMatrixMult() {
+  Vector<int> vec({2, 1, 1});
+  Matrix<int> mat({
+      {2,3},
+      {1,4},
+      {0,1}
+  });
+  Vector<int> result = vec * mat;
+  Vector<int> expected({5,11});
+
+  std::cout << vec << "* \n" << mat << ": \n";
+
+  std::cout << result << '\n';
   assert(result == expected);
 }
 }  // namespace
@@ -44,4 +59,5 @@ int main() {
   testDot();
   testCross();
   testMatrixVectorMult();
+  testVectorMatrixMult();
 }

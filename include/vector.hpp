@@ -28,6 +28,7 @@ class Vector {
   ~Vector();
 
   explicit Vector(const size_t &p_size);
+  Vector(const size_t &psize, const T& fillElement);
   Vector(const std::initializer_list<T> &init);
 
   bool operator==(const Vector<T> &other) const;
@@ -59,6 +60,14 @@ Vector<T>::Vector() : size(0) {
 template <TensorElement T>
 Vector<T>::Vector(const size_t &p_size) : size(p_size) {
   allocateForVecData();
+}
+
+template <TensorElement T>
+Vector<T>::Vector(const size_t &psize, const T& fillElement) : size(psize) {
+  allocateForVecData();
+  for (size_t i=0; i<size; ++i) {
+    (*this)[i] = fillElement;
+  }
 }
 
 template <TensorElement T>
@@ -194,10 +203,10 @@ bool checkEqualDimensions(const Vector<T> &first, const Vector<T> &second) {
 
 template <TensorElement T>
 std::ostream &operator<<(std::ostream &outputstream, const Vector<T> &vec) {
-  for (int i = 0; i < vec.size; i++) {
+  for (int i = 0; i < vec.size -1; i++) {
     outputstream << vec[i] << ", ";
   }
-  outputstream << '\n';
+  outputstream << vec[vec.size - 1] << '\n';
   return outputstream;
 }
 

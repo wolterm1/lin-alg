@@ -3,4 +3,5 @@
 
 int main() {
   NeuralNet net(24, 9, 4, 4);
+  std::cout << net << "\n";
 }
