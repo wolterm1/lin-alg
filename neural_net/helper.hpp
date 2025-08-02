@@ -8,4 +8,6 @@ lin::Vector<double> apply_activation_function(lin::Vector<double> vec, const std
 
 double sigmoid(double x);
 
+double getRandom();
+
 }

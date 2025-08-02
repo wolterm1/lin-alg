@@ -1,6 +1,7 @@
 #include "net.hpp"
 #include "../include/linalg.hpp"
 #include "helper.hpp"
+#include <cstdlib>
 
 using lin::Vector;
 using lin::Matrix;
@@ -11,18 +12,19 @@ NeuralNet::NeuralNet(size_t inputNodeCount, size_t outputNodeCount, size_t hidde
   : Neurons(hiddenLayerCount+2), Weights(hiddenLayerCount+1) {
 
   //input Nodes + bias, same for Weight Matrices and neurons
-  Neurons[0] = Vector<double>(inputNodeCount, 0.3);
-  Neurons[hiddenLayerCount+1] = Vector<double>(outputNodeCount,0.5);
+  Neurons[0] = Vector<double>(inputNodeCount, getRandom);
+  Neurons[hiddenLayerCount+1] = Vector<double>(outputNodeCount, getRandom);
   for (size_t i = 1; i <= hiddenLayerCount; ++i) {
-    Neurons[i] = Vector<double>(hiddenNodeCount, 0.1);
+    Neurons[i] = Vector<double>(hiddenNodeCount, getRandom);
   }
   
-  Weights[0] = Matrix<double>(inputNodeCount, hiddenLayerCount, 0.5);
-  Weights[hiddenLayerCount] = Matrix<double>(hiddenLayerCount, outputNodeCount, 0.7);
+  Weights[0] = Matrix<double>(inputNodeCount, hiddenLayerCount, getRandom);
+  Weights[hiddenLayerCount] = Matrix<double>(hiddenLayerCount, outputNodeCount, getRandom);
   for (size_t i = 1; i < hiddenLayerCount; ++i) {
-    Weights[i] = Matrix<double>(hiddenLayerCount, hiddenLayerCount, 0.2);
+    Weights[i] = Matrix<double>(hiddenLayerCount, hiddenLayerCount, getRandom) ;
   }
 }
+
 
 
 void NeuralNet::forward_pass() {

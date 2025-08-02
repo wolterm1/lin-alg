@@ -1,5 +1,6 @@
 #include "helper.hpp"
 #include <cmath>
+#include <random>
 
 namespace nn {
 
@@ -14,6 +15,13 @@ Vector<double> apply_activation_function(Vector<double> vec, const std::function
 
 double sigmoid(double x) {
   return 1.0/(1.0+std::exp(-x));
+}
+
+double getRandom() {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dist(0.0, 1.0);
+    return dist(gen);
 }
 
 }

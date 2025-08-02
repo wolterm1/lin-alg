@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <iostream>
 #include <vector>
 
@@ -41,6 +42,7 @@ class Matrix {
   ~Matrix();
 
   static auto createIdentity(const size_t &rows, const size_t &columns) -> Matrix<T>;
+  Matrix(const size_t& rows, const size_t& columns, const std::function<T()>&);
   Matrix<T> getTranspose() const;
 
   /*********************** Operators **********************/
@@ -206,6 +208,16 @@ Matrix<T> Matrix<T>::createIdentity(const size_t &rows, const size_t &columns) {
     }
   }
   return res;
+}
+
+template <Numeric T>
+Matrix<T>::Matrix(const size_t& rows, const size_t& columns, const std::function<T()>& func) : rows(rows), columns(columns) {
+  allocateForMatrixData();
+  for (int i = 0; i < rows; i++) {
+    for (int j = 0; j < columns; j++) {
+     (*this)(i,j) = func(); 
+    }
+  }
 }
 
 template <Numeric T>

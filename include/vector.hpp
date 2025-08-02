@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstddef>
+#include <functional>
 #include <iostream>
 
 #include "concepts.hpp"
@@ -30,6 +31,7 @@ class Vector {
   explicit Vector(const size_t &p_size);
   Vector(const size_t &psize, const T& fillElement);
   Vector(const std::initializer_list<T> &init);
+  Vector(const size_t &psize, const std::function<T()>& func); 
 
   bool operator==(const Vector<T> &other) const;
   T &operator[](const size_t &pos) const;
@@ -39,6 +41,7 @@ class Vector {
   Vector<T> operator-(const Vector<T> &other);
   Vector<T> &operator*=(const T &scalar);
   Vector<T> operator*(const T &scalar);
+
 
   friend std::ostream &operator<< <T>(std::ostream &outputstream, const Vector<T> &vec);
 
@@ -67,6 +70,14 @@ Vector<T>::Vector(const size_t &psize, const T& fillElement) : size(psize) {
   allocateForVecData();
   for (size_t i=0; i<size; ++i) {
     (*this)[i] = fillElement;
+  }
+}
+
+template <TensorElement T>
+Vector<T>::Vector(const size_t &psize, const std::function<T()>& func) : size(psize) {
+  allocateForVecData();
+  for (size_t i=0; i<size; ++i) {
+    (*this)[i] = func();
   }
 }
 
