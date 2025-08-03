@@ -17,5 +17,4 @@ std::vector<uint8_t> load_mnist_labels(const std::string& filename);
 
 void visualize_mnist_images(const std::vector<std::vector<uint8_t>>& vec);
 
-
 }
