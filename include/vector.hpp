@@ -19,6 +19,12 @@ bool checkEqualDimensions(const Vector<T> &first, const Vector<T> &second);
 
 template <TensorElement T>
 class Vector {
+
+ private:
+  T *vecData;
+  size_t size;
+  void allocateForVecData();
+
  public:
   // rule of five
   Vector(const Vector<T> &other);
@@ -47,11 +53,67 @@ class Vector {
 
   void swap(Vector<T> &) noexcept;
   size_t getSize() const;
+  T* data() const;
 
- private:
-  T *vecData;
-  size_t size;
-  void allocateForVecData();
+  struct Iterator {
+    using iterator_concept = std::contiguous_iterator_tag;
+    using iterator_category = std::random_access_iterator_tag;
+    using difference_type = std::ptrdiff_t;
+    using value_type = T;
+    using pointer = T *;
+    using reference = T &;
+
+    explicit Iterator(pointer p_ptr = nullptr) : ptr(p_ptr) {}
+
+    pointer operator->() const { return ptr; }
+
+    reference operator*() const { return *ptr; }
+
+    Iterator &operator++() {
+      ++ptr;
+      return *this;
+    }
+
+    Iterator operator++(int) {
+      auto tmp = *this;
+      ++(*this);
+      return tmp;
+    }
+
+    Iterator &operator--() {
+      --ptr;
+      return *this;
+    }
+
+    Iterator operator--(int) {
+      auto tmp = *this;
+      --(*this);
+      return tmp;
+    }
+
+    Iterator &operator+=(difference_type n) {
+      ptr += n;
+      return *this;
+    }
+    Iterator operator+(difference_type n) const { return Iterator(ptr + n); }
+    friend Iterator operator+(difference_type n, const Iterator j) { return n + j; }
+    Iterator &operator-=(const difference_type n) {
+      ptr -= n;
+      return *this;
+    }
+    difference_type operator-(const Iterator j) const { return ptr - j.ptr; }
+    Iterator operator-(const difference_type n) const { return Iterator(ptr - n); }
+    reference operator[](difference_type n) const { return *(ptr + n); }
+    auto operator<=>(const Iterator &) const = default;
+
+   private:
+    pointer ptr;
+  };
+  Iterator begin() { return Iterator(vecData); }
+  Iterator end() { return Iterator(vecData + size); }
+
+  Iterator begin() const { return Iterator(vecData); } 
+  Iterator end() const { return Iterator(vecData + size); }
 };
 
 
@@ -205,6 +267,11 @@ size_t Vector<T>::getSize() const {
   return size;
 }
 
+
+template <TensorElement T>
+T* Vector<T>::data() const {
+  return vecData;
+}
 /***** friend functons *****/
 
 template <TensorElement T>
@@ -214,10 +281,10 @@ bool checkEqualDimensions(const Vector<T> &first, const Vector<T> &second) {
 
 template <TensorElement T>
 std::ostream &operator<<(std::ostream &outputstream, const Vector<T> &vec) {
-  for (int i = 0; i < vec.size -1; i++) {
+  for (int i = 0; i < vec.size-1; i++) {
     outputstream << vec[i] << ", ";
   }
-  outputstream << vec[vec.size - 1] << '\n';
+  outputstream << vec[vec.size-1];
   return outputstream;
 }
 

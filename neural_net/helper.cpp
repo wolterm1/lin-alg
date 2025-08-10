@@ -7,28 +7,31 @@ namespace nn {
 
 using lin::Vector;
 
-Vector<double> apply_activation_function(Vector<double> vec, const std::function<double(double)>& func) {
+Vector<float> apply_activation_function(Vector<float> vec, const std::function<float(float)>& func) {
   for(size_t i = 0; i<vec.getSize(); ++i) {
     vec[i] = func(vec[i]);
   }
   return vec;
 }
 
-double sigmoid(double x) {
+float sigmoid(float x) {
   return 1.0/(1.0+std::exp(-x));
 }
 
-double getRandom() {
+float getRandom() {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::uniform_real_distribution<> dist(0.0, 1.0);
     return dist(gen);
 }
 
-std::vector<std::vector<uint8_t>> load_mnist_images(const std::string& filename){
+Vector<Vector<uint8_t>> load_mnist_images(const std::string& filename){
     std::ifstream file(filename, std::ios::binary);
     if (!file) throw std::runtime_error("Datei nicht gefunden: " + filename);
-    int32_t magic, num_images, rows, cols;
+    int32_t magic;
+    int32_t num_images;
+    int32_t rows;
+    int32_t cols;
     file.read((char*)&magic, 4);
     file.read((char*)&num_images, 4);
     file.read((char*)&rows, 4);
@@ -37,42 +40,91 @@ std::vector<std::vector<uint8_t>> load_mnist_images(const std::string& filename)
     num_images = __builtin_bswap32(num_images);
     rows = __builtin_bswap32(rows);
     cols = __builtin_bswap32(cols);
-    std::vector<std::vector<uint8_t>> images(num_images, std::vector<uint8_t>(rows * cols));
+    lin::Vector<lin::Vector<uint8_t>> images(num_images, Vector<uint8_t>(rows * cols));
     for (int i = 0; i < num_images; ++i)
         file.read((char*)images[i].data(), rows * cols);
     return images;
 }
 
-std::vector<uint8_t> load_mnist_labels(const std::string& filename){
+
+Vector<uint8_t> load_mnist_labels(const std::string& filename){
     std::ifstream file(filename, std::ios::binary);
-    if (!file) throw std::runtime_error("Datei nicht gefunden: " + filename);
+    if (!file.is_open()) {
+        throw std::runtime_error("Datei nicht gefunden: " + filename);
+    }
 
-    int32_t magic, num_items;
-    file.read((char*)&magic, 4);
-    file.read((char*)&num_items, 4);
+    // Header: Magic Number + Anzahl der Labels (jeweils 4 Bytes, Big Endian)
+    uint32_t magic = 0;
+    uint32_t num_items = 0;
 
-    magic = __builtin_bswap32(magic);
+    file.read(reinterpret_cast<char*>(&magic), 4);
+    file.read(reinterpret_cast<char*>(&num_items), 4);
+
+    // Big Endian → Little Endian umwandeln (für Intel/AMD)
+    magic     = __builtin_bswap32(magic);
     num_items = __builtin_bswap32(num_items);
 
-    std::vector<uint8_t> labels(num_items);
-    file.read((char*)labels.data(), num_items);
+    if (magic != 2049) {
+        throw std::runtime_error("Falsche Magic Number in Label-Datei: " + std::to_string(magic));
+    }
+
+    // Labels einlesen
+    Vector<uint8_t> labels(num_items);
+    file.read(reinterpret_cast<char*>(labels.data()), num_items);
+
+    if (!file) {
+        throw std::runtime_error("Fehler beim Lesen der Labels aus: " + filename);
+    }
     return labels;
 }
 
 
+Vector<Vector<float>> normalize_images(const Vector<Vector<uint8_t>>& images) {
+  Vector<Vector<float>> results(images.getSize());
+  for(int i=0; i<images.getSize(); ++i) {
+    Vector<float> normalized(images[i].getSize());//size is known beforehand maybe allocat beforhand but premature since Vector is static and can be used here
+    for(int j=0; j<images[i].getSize(); ++j) {
+      normalized[j] = (static_cast<float>(images[i][j])/255.0f); //scale down 8 bit integer to [0,1]
+    }
+    results[i] = (std::move(normalized));
+  }
+  return results;
+}
 
 
-void visualize_mnist_images(const std::vector<std::vector<uint8_t>>& vec) {
-  for (size_t t=0; t < vec.size(); ++t) {
+lin::Vector<lin::Vector<float>> one_hot_encode(const Vector<uint8_t>& labels) {
+  lin::Vector<lin::Vector<float>> result(labels.getSize());
+  for(int i=0; i<labels.getSize(); ++i) {
+    lin::Vector<float> one_hot(10, 0.0f);
+    one_hot[labels[i]] = 1.0;
+    result[i] = std::move(one_hot);
+  }
+  return result;
+}
+
+
+
+void visualize_mnist_images(const Vector<Vector<uint8_t>>& vec) {
+  for (size_t t=0; t < vec.getSize(); ++t) {
     std::cout << "Image " << t << ":\n";
-    for (size_t k=0; k < vec[t].size(); ++k) {
+    for (size_t k=0; k < vec[t].getSize(); ++k) {
       std::cout << (vec[t][k] > 140 ? '#' : ' ');
       if ((k+1) % 28 == 0) {
         std::cout << '\n';
       }
     }
-    std::cout<< '\n';
+    std::cout << '\n';
   }
 }
+
+
+void print_labels(const Vector<uint8_t>& labels) { 
+  for (int i = 0; i < labels.getSize(); ++i)  {
+    std::cout << static_cast<int>(labels[i]) << '\n';
+  }
+}
+
+
+
 
 }

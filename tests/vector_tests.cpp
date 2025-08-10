@@ -60,4 +60,10 @@ int main() {
   testCross();
   testMatrixVectorMult();
   testVectorMatrixMult();
+
+
+  lin::Vector<int> vec({1,2,34,0,543,5,43});
+  for (auto& el : vec) {
+    std::cout << el;
+  }
 }

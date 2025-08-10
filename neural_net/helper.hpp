@@ -5,16 +5,23 @@
 
 namespace nn {
 
-lin::Vector<double> apply_activation_function(lin::Vector<double> vec, const std::function<double(double)>& func);
+lin::Vector<float> apply_activation_function(lin::Vector<float> vec, const std::function<float(float)>& func);
 
-double sigmoid(double x);
+float sigmoid(float x);
 
-double getRandom();
+float getRandom();
 
-std::vector<std::vector<uint8_t>> load_mnist_images(const std::string& filename);
+lin::Vector<lin::Vector<uint8_t>> load_mnist_images(const std::string& filename);
 
-std::vector<uint8_t> load_mnist_labels(const std::string& filename);
+lin::Vector<uint8_t> load_mnist_labels(const std::string& filename);
 
-void visualize_mnist_images(const std::vector<std::vector<uint8_t>>& vec);
+lin::Vector<lin::Vector<float>> normalize_images(const lin::Vector<lin::Vector<uint8_t>>& images);
+
+lin::Vector<lin::Vector<float>> one_hot_encode(const lin::Vector<uint8_t>& labels);
+
+
+void visualize_mnist_images(const lin::Vector<lin::Vector<uint8_t>>& vec);
+
+void print_labels(const lin::Vector<uint8_t>& vec);
 
 }

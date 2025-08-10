@@ -1,27 +1,30 @@
 #include <matrix.hpp>
 #include <vector.hpp>
 #include <iostream>
-#include <functional>
 
 namespace nn {
 
 class NeuralNet {
   public: 
   NeuralNet(size_t inputNodeCount, size_t outputNodeCount, size_t hiddenLayerCount, size_t hiddenNodeCount);
-  explicit NeuralNet(const std::string& filename);
-  void forward_pass();
-  void train(size_t epochs, double learning_rate);
+  void train(const lin::Vector<lin::Vector<float>>& trainingData, const lin::Vector<lin::Vector<float>>& labels, size_t epochs, float learningRate);
   double gradient_descent();
-  void backpropagate();
+  void forward_pass(const lin::Vector<float>& inputData);
+  void backward_pass(const lin::Vector<float>& oneHotLabels);
   double calculate_error();
 
   void save_to_file(const std::string& filename);
-  
+  explicit NeuralNet(const std::string& filename);
+
   friend std::ostream& operator<<(std::ostream& outputstream, const NeuralNet& net);
 
   private:
-  lin::Vector<lin::Matrix<double>> Weights;
-  lin::Vector<lin::Vector<double>> Neurons; 
+  lin::Vector<lin::Matrix<float>> weights;
+  lin::Vector<lin::Vector<float>> neurons; 
+  lin::Vector<float> biases;
+  
+  // change this to apply function to set weights
+  void init_weights();
 };
 
 }

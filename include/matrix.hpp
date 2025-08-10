@@ -143,6 +143,8 @@ class Matrix {
   };
   Iterator begin() { return Iterator(matrixData); }
   Iterator end() { return Iterator(matrixData + (columns * rows)); }
+  Iterator begin() const { return Iterator(matrixData); }
+  Iterator end() const { return Iterator(matrixData + (columns * rows)); }
 };  // class declaration
 
 }  // namespace lin
