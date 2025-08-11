@@ -9,7 +9,9 @@ lin::Vector<float> apply_activation_function(lin::Vector<float> vec, const std::
 
 float sigmoid(float x);
 
-float getRandom();
+float uniform_distribution_in(float lower, float upper);
+
+float calculate_mse(const lin::Vector<float>& actual, const lin::Vector<float>& target);
 
 lin::Vector<lin::Vector<uint8_t>> load_mnist_images(const std::string& filename);
 
@@ -23,5 +25,7 @@ lin::Vector<lin::Vector<float>> one_hot_encode(const lin::Vector<uint8_t>& label
 void visualize_mnist_images(const lin::Vector<lin::Vector<uint8_t>>& vec);
 
 void print_labels(const lin::Vector<uint8_t>& vec);
+
+
 
 }

@@ -18,11 +18,19 @@ float sigmoid(float x) {
   return 1.0/(1.0+std::exp(-x));
 }
 
-float getRandom() {
+float uniform_distribution_in(float lower, float upper) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
-    std::uniform_real_distribution<> dist(0.0, 1.0);
-    return dist(gen);
+    std::uniform_real_distribution<> dist(lower, upper);
+    return static_cast<float>(dist(gen));
+}
+
+float calculate_mse(const lin::Vector<float>& actual, const lin::Vector<float>& target) {
+  float error = 0.0f;
+  for (int i = 0; i < actual.getSize(); ++i) {
+    error += (target[i] - actual[i]) * (target[i] - actual[i]) ;
+  }
+  return error /= static_cast<float>(actual.getSize());
 }
 
 Vector<Vector<uint8_t>> load_mnist_images(const std::string& filename){

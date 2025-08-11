@@ -281,10 +281,11 @@ bool checkEqualDimensions(const Vector<T> &first, const Vector<T> &second) {
 
 template <TensorElement T>
 std::ostream &operator<<(std::ostream &outputstream, const Vector<T> &vec) {
+  outputstream << "[";
   for (int i = 0; i < vec.size-1; i++) {
     outputstream << vec[i] << ", ";
   }
-  outputstream << vec[vec.size-1];
+  outputstream << vec[vec.size-1] << "]";
   return outputstream;
 }
 

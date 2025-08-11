@@ -19,12 +19,22 @@ class NeuralNet {
   friend std::ostream& operator<<(std::ostream& outputstream, const NeuralNet& net);
 
   private:
-  lin::Vector<lin::Matrix<float>> weights;
+
+  size_t inputNodeCount;
+  size_t outputNodeCount;
+  size_t hiddenLayerCount;
+  size_t hiddenNodeCount;
+
   lin::Vector<lin::Vector<float>> neurons; 
-  lin::Vector<float> biases;
+  lin::Vector<lin::Matrix<float>> weights;
+  lin::Vector<lin::Vector<float>> biases;
   
   // change this to apply function to set weights
+  void init_net();
+  void init_neurons();
   void init_weights();
+  void init_biases();
+
 };
 
 }
