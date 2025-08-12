@@ -26,9 +26,9 @@ void checkEqualVectorSizeToMatrixRows(const Vector<X>& vec, const Matrix<T>& mat
 
 
 template <Numeric T, TensorElement X>
-void checkEqualVectorSize(const Vector<T> &first, const Vector<X> &second) {
+void checkEqualVectorSize(const Vector<T> &first, const Vector<X> &second, const std::string& caller) {
   if (first.getSize() != 3 || second.getSize() != 3) {
-    std::string msg = "Wrong dimensions for Crossproduct: " + std::to_string(first.getSize()) +
+    std::string msg = "Wrong dimensions for : " + caller + "  " + std::to_string(first.getSize()) +
                       "x" + std::to_string(second.getSize());
     throw std::invalid_argument(msg);
   }
@@ -39,6 +39,18 @@ Vector<T> cross(const Vector<T> &a, const Vector<T> &b) {
   return Vector<T>({(a[1] * b[2]) - (a[2] * b[1]),
                     (a[2] * b[0]) - (a[0] * b[2]),
                     (a[0] * b[1]) - (a[1] * b[0])});
+}
+
+template <Numeric T>
+Matrix<T> outer_product(const Vector<T> &a, const Vector<T> &b) {
+  checkEqualVectorSize(a,b, "outer_product");
+  Matrix<T> result(a.getSize(), a.getSize());
+  for (size_t i=0; i<a.getSize(); ++i) {
+    for (size_t j=0; j<b.getSize(); ++j) {
+      result(i,j) = a[i] * b[j];
+    }
+  }
+  return result;
 }
 
 template <Numeric T>
@@ -77,11 +89,22 @@ Vector<T> operator*(const Vector<T> &vec, const Matrix<T> &mat) {
   for (size_t i = 0; i<mat.getColumns(); ++i) {
     T tmp = 0;
     for (size_t j = 0; j < mat.getRows(); ++j) {
-      tmp += vec[j] * mat(j,i);
+      tmp = vec[j] * mat(j,i);
     }
     result[i] = tmp;
   }
   return result;
+}
+
+
+template <Numeric T>
+Matrix<T> operator*(const T& scalar, const Matrix<T> &mat) {
+  return mat*scalar;
+}
+
+template <TensorElement T>
+Vector<T> operator*(const T& scalar, const Vector<T> &vec) {
+  return vec*scalar; 
 }
 
 }  // namespace lin

@@ -5,9 +5,11 @@
 
 namespace nn {
 
-lin::Vector<float> apply_activation_function(lin::Vector<float> vec, const std::function<float(float)>& func);
+lin::Vector<float> apply_activation_function(lin::Vector<float>& vec, const std::function<float(float)>& func);
 
 float sigmoid(float x);
+
+float sigmoid_derivative(float x);
 
 float uniform_distribution_in(float lower, float upper);
 

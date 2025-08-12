@@ -7,7 +7,7 @@ namespace nn {
 
 using lin::Vector;
 
-Vector<float> apply_activation_function(Vector<float> vec, const std::function<float(float)>& func) {
+Vector<float> apply_activation_function(Vector<float>& vec, const std::function<float(float)>& func) {
   for(size_t i = 0; i<vec.getSize(); ++i) {
     vec[i] = func(vec[i]);
   }
@@ -16,6 +16,10 @@ Vector<float> apply_activation_function(Vector<float> vec, const std::function<f
 
 float sigmoid(float x) {
   return 1.0/(1.0+std::exp(-x));
+}
+
+float sigmoid_derivative(float x) {
+  return sigmoid(x) * (1-sigmoid(x)); 
 }
 
 float uniform_distribution_in(float lower, float upper) {

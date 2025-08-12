@@ -37,6 +37,15 @@ void testMatrixVectorMult() {
   assert(result == expected);
 }
 
+void testCompMult() {
+  Vector<int> vec({1, 2, -3});
+  Vector<int> vec2({3,2,2});
+  Vector<int> result = vec.hadamard_product(vec2);
+  Vector<int> expected({3,4,-6});
+
+  assert(result == expected);
+}
+
 void testVectorMatrixMult() {
   Vector<int> vec({2, 1, 1});
   Matrix<int> mat({

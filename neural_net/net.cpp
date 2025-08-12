@@ -18,6 +18,7 @@ NeuralNet::NeuralNet(size_t inputNodeCount, size_t outputNodeCount, size_t hidde
 
 void NeuralNet::init_net() {
   init_neurons();
+  init_zvalues();
   init_weights();
   init_biases();
 }
@@ -32,6 +33,15 @@ void NeuralNet::init_neurons() {
   neurons[hiddenLayerCount+1] = Vector<float>(outputNodeCount, 0.0f);
 }
 
+void NeuralNet::init_zvalues() {
+  zvalues = Vector<Vector<float>>(hiddenLayerCount+2);
+  zvalues[0] = Vector<float>(inputNodeCount, 0.0f);
+  for (size_t currentLayer = 1; currentLayer <= hiddenLayerCount; ++currentLayer) {
+    zvalues[currentLayer] = Vector<float>(hiddenNodeCount, 0.0f);
+  }
+  zvalues[hiddenLayerCount+1] = Vector<float>(outputNodeCount, 0.0f);
+}
+
 // Xavier Weight Init
 void NeuralNet::init_weights() {
   weights = Vector<Matrix<float>>(hiddenLayerCount+1);
@@ -39,7 +49,7 @@ void NeuralNet::init_weights() {
     size_t fan_in = neurons[i].getSize(); 
     size_t fan_out = neurons[i+1].getSize(); 
     float limit = std::sqrt(6.0f / (static_cast<float>(fan_in) + static_cast<float>(fan_out)));
-    weights[i] = Matrix<float>(neurons[i].getSize(), neurons[i+1].getSize(), std::bind(uniform_distribution_in, -limit, limit));
+    weights[i] = Matrix<float>(neurons[i+1].getSize(), neurons[i].getSize(), std::bind(uniform_distribution_in, -limit, limit));
   }
 }
 
@@ -54,12 +64,12 @@ void NeuralNet::init_biases() {
 void NeuralNet::forward_pass(const Vector<float>& inputData) {
   neurons[0] = inputData;
   for (size_t i=1; i<neurons.getSize(); ++i) {
-    neurons[i] = apply_activation_function((neurons[i-1] * weights[i-1]) + biases[i-1], sigmoid); 
+    zvalues[i] = (weights[i-1] * neurons[i-1]) + biases[i-1];
+    neurons[i] = apply_activation_function(zvalues[i], sigmoid); 
   }
 }
 
-void NeuralNet::backward_pass(const Vector<float>& oneHotLabel) {
-  //calculateError(neurons[neurons.getSize()-1], oneHotLabel);
+void NeuralNet::backpropagation(const Vector<float>& targetLabel, float learnRate) {
 }
 
 //takes in normalized images and one-hot encoded labels in [0,9]
@@ -67,7 +77,7 @@ void NeuralNet::train(const Vector<Vector<float>>& trainingData, const Vector<Ve
   for (size_t i = 0; i < trainingData.getSize(); ++i) {
     for (size_t currentEpoch; currentEpoch <= epochs; ++currentEpoch) {
       this->forward_pass(trainingData[i]);
-      this->backward_pass(labels[i]);
+      this->backpropagation(labels[i], learningRate);
     }
   }
 }

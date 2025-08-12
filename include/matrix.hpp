@@ -51,27 +51,22 @@ class Matrix {
 
   bool operator==(const Matrix<T> &other) const;
 
-  [[nodiscard]]
   Matrix<T> operator+(const Matrix<T> &other) const;
 
   Matrix<T> &operator+=(const Matrix<T> &other);
 
-  [[nodiscard]]
   Matrix<T> operator-(const Matrix<T> &other) const;
 
   Matrix<T> &operator-=(const Matrix<T> &other);
 
-  [[nodiscard]]
   Matrix<T> operator*(const T &scalar) const;
 
   Matrix<T> &operator*=(const T &scalar);
 
-  [[nodiscard]]
   Matrix<T> operator/(const T &scalar) const;
 
   Matrix<T> &operator/=(const T &scalar);
 
-  [[nodiscard]]
   Matrix<T> operator*(const Matrix<T> &other) const;
 
   Matrix<T> &operator*=(const Matrix<T> &other);
@@ -227,8 +222,7 @@ Matrix<T> Matrix<T>::getTranspose() const {
   Matrix<T> result(columns, rows);  // use columns for rows and rows for columns
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < columns; j++) {
-      result(j, i) = (*this)(i,
-                             j);  // use columns of original to access rows of result and vice versa
+      result(j, i) = (*this)(i,j);  // use columns of original to access rows of result and vice versa
     }
   }
   return result;

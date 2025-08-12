@@ -25,7 +25,8 @@ int main() {
 
   net.forward_pass(normalizedImages[0]);
   std::cout << "\n Net After One forward_pass() : " << net << "\n";
-
+  
+  net.backpropagation(oneHotLabels[0], 1.0);
   
   //net.train(normalizedImages, oneHotLabels, 1,1.0);
   //std::cout << net << "\n";
