@@ -1,5 +1,4 @@
 #pragma once
-
 #include <functional>
 #include <iostream>
 #include <vector>
@@ -29,7 +28,7 @@ class Matrix {
 
   template <typename Iter>
   Matrix(const size_t &rows, const size_t &pcolumns, Iter containerBeginIt, Iter containerEndIt);
-  explicit Matrix(const std::vector<std::vector<T>> &vec);
+  Matrix(const std::initializer_list<std::initializer_list<T>> &vec);
   Matrix(const size_t &rows, const size_t &columns, const T &value);
   Matrix(const size_t &rows, const size_t &columns);
   Matrix();
@@ -182,14 +181,10 @@ Matrix<T>::Matrix(const size_t &prows,
 }
 
 template <Numeric T>
-Matrix<T>::Matrix(const std::vector<std::vector<T>> &vec)
-    : rows(vec.size()), columns(vec[0].size()) {
+Matrix<T>::Matrix(const std::initializer_list<std::initializer_list<T>>& initList)
+    : rows(initList.size()), columns(initList.begin()->size()) {
   allocateForMatrixData();
-  for (int i = 0; i < rows; i++) {
-    for (int j = 0; j < columns; j++) {
-      (*this)(i, j) = vec[i][j];
-    }
-  }
+
 }
 
 template <Numeric T>

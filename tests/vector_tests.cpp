@@ -37,10 +37,14 @@ void testMatrixVectorMult() {
   assert(result == expected);
 }
 
+void testMatrix_getTranspose(){
+  Matrix<float> mat({{1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0}});
+}
+
 void testCompMult() {
   Vector<int> vec({1, 2, -3});
   Vector<int> vec2({3,2,2});
-  Vector<int> result = vec.hadamard_product(vec2);
+  Vector<int> result = hadamard_product(vec, vec2);
   Vector<int> expected({3,4,-6});
 
   assert(result == expected);

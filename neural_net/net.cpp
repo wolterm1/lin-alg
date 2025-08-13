@@ -4,10 +4,10 @@
 #include <cmath>
 #include <cstdlib>
 #include <iomanip>
-#include <random>
 
 using lin::Vector;
 using lin::Matrix;
+using lin::hadamard_product;
 
 namespace nn {
 
@@ -70,6 +70,24 @@ void NeuralNet::forward_pass(const Vector<float>& inputData) {
 }
 
 void NeuralNet::backpropagation(const Vector<float>& targetLabel, float learnRate) {
+  // Backpropagation algorithm, Computes Error Vector for each Neuron Layer, starting at the Last Layer and uses dynamic Programming to compute Error Vectors in [0 , L-2]
+  size_t L = neurons.getSize();
+  Vector<Vector<float>> deltas(L);
+
+  // compute delta Error Vector at last layer
+  deltas[L-1] = hadamard_product(targetLabel - neurons[L-1], apply_activation_function(zvalues[L-1], sigmoid_derivative));
+
+  for (int i = L-2;  i>=0; --i) {
+    //deltas[i] = hadamard_product(
+    //    weights[i+1].getTranspose() * deltas[i+1],
+    //    apply_activation_function(zvalues[i], sigmoid_derivative)
+    //    );
+  }
+
+  // now deltas[i] contains error Vector for ever Layer in [0,L-1]
+  for (size_t i = 0; i < L; ++i) {
+
+  }
 }
 
 //takes in normalized images and one-hot encoded labels in [0,9]

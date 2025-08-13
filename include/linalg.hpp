@@ -53,6 +53,13 @@ Matrix<T> outer_product(const Vector<T> &a, const Vector<T> &b) {
   return result;
 }
 
+
+template <TensorElement T>
+Vector<T> hadamard_product(const Vector<T>& first, const Vector<T>& second)  {
+  Vector<T> copy(first);
+  return copy.hadamard_product_in(second);
+}
+
 template <Numeric T>
 T dot(const Vector<T> &firstVec, const Vector<T> &secondVec) {
   checkEqualDimensions(firstVec, secondVec);

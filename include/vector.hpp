@@ -44,7 +44,7 @@ class Vector {
   Vector<T> &operator+=(const Vector<T> &other);
   Vector<T> operator+(const Vector<T> &other);
   Vector<T> &operator-=(const Vector<T> &other);
-  Vector<T> operator-(const Vector<T> &other);
+  Vector<T> operator-(const Vector<T> &other) const;
   Vector<T> &operator*=(const T &scalar);
   Vector<T> operator*(const T &scalar) const;
   Vector<T>& hadamard_product_in(const Vector<T>& other);
@@ -226,7 +226,7 @@ Vector<T> &Vector<T>::operator-=(const Vector<T> &other) {
 }
 
 template <TensorElement T>
-Vector<T> Vector<T>::operator-(const Vector<T> &other) {
+Vector<T> Vector<T>::operator-(const Vector<T> &other) const {
   Vector<T> copy(*this);
   copy -= other;
   return copy;
@@ -256,11 +256,6 @@ Vector<T>& Vector<T>::hadamard_product_in(const Vector<T>& other) {
 }
 
 
-template <TensorElement T>
-Vector<T> Vector<T>::hadamard_product(const Vector<T>& other) {
-  Vector<T> copy(*this);
-  return copy.hadamard_product_in(other);
-}
 
 
 template <TensorElement T>
