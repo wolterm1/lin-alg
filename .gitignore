@@ -1,7 +1,7 @@
 /build/
 
 *.git
-
+*.nn
 #vscode config
 .vscode/
 .cache/

@@ -14,7 +14,8 @@ int main() {
   auto trainingOneHotLabels = nn::one_hot_encode(trainingLabels);
 
   nn::NeuralNet net(784, 10, 2, 128);
-  net.train(trainingNormalizedImages, trainingOneHotLabels, 20, 0.01);
+  net.save_to_file("test");
+  //net.train(trainingNormalizedImages, trainingOneHotLabels, 20, 0.01);
 
 
 

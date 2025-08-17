@@ -73,6 +73,7 @@ class Matrix {
 
   size_t getRows() const;
   size_t getColumns() const;
+  T* data() const;
 
   /*********************** helpers **********************/
 
@@ -289,6 +290,10 @@ size_t Matrix<T>::getColumns() const {
   return columns;
 }
 
+template <Numeric T> 
+T* Matrix<T>::data() const {
+  return matrixData;
+}
 template <Numeric T>
 bool Matrix<T>::operator==(const Matrix<T> &other) const {
   if (rows != other.rows || columns != other.columns) {

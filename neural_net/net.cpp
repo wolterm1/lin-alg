@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cstdlib>
 #include <iomanip>
+#include <fstream>
 
 using lin::Vector;
 using lin::Matrix;
@@ -112,6 +113,30 @@ void NeuralNet::train(const Vector<Vector<float>>& trainingData, const Vector<Ve
 Vector<float> NeuralNet::classify(const Vector<float>& inputData) {
   this->forward_pass(inputData);
   return neurons[hiddenLayerCount+1];
+}
+
+void NeuralNet::save_to_file(const std::string& filename){
+
+  std::fstream file(filename + ".nn", std::ios::trunc | std::ios::out | std::ios::binary);
+  
+  std::string magic = "KNNET";
+  file.write(magic.data(), magic.length() * sizeof(char));
+
+  size_t weightMatricesCount = weights.getSize(); 
+  file.write(reinterpret_cast<char*>(&weightMatricesCount), sizeof(weightMatricesCount));
+
+  for (size_t i = 0; i < weightMatricesCount; ++i) {
+
+    size_t rows = weights[i].getRows();
+    size_t cols = weights[i].getColumns();
+    file.write(reinterpret_cast<char*>(&rows), sizeof(rows));
+    file.write(reinterpret_cast<char*>(&cols), sizeof(cols));
+    file.write(reinterpret_cast<char*>(weights[i].data()), rows * cols * sizeof(float));
+
+    size_t biasSize = biases[i].getSize();
+    file.write(reinterpret_cast<char*>(&biasSize), sizeof(biasSize));
+    file.write(reinterpret_cast<char*>(biases[i].data()), biasSize * sizeof(float));
+  }
 }
 
 

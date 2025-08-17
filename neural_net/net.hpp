@@ -13,7 +13,7 @@ class NeuralNet {
   lin::Vector<float> classify(const lin::Vector<float>& inputData);
 
   void save_to_file(const std::string& filename);
-  explicit NeuralNet(const std::string& filename);
+  static NeuralNet load_from_file(const std::string& filenname); // factory method to construct a Neural Net from File
 
   friend std::ostream& operator<<(std::ostream& outputstream, const NeuralNet& net);
 
