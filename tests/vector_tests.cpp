@@ -3,8 +3,10 @@
 #include "../include/linalg.hpp"
 #include "../include/matrix.hpp"
 #include "../include/vector.hpp"
+
 using lin::Matrix;
 using lin::Vector;
+using lin::outer_product;
 
 namespace {
 void testDot() {
@@ -39,6 +41,7 @@ void testMatrixVectorMult() {
 
 void testMatrix_getTranspose(){
   Matrix<float> mat({{1.0, 2.0}, {3.0, 4.0}, {5.0, 6.0}});
+  auto I = mat.getTranspose();
 }
 
 void testCompMult() {
@@ -60,23 +63,27 @@ void testVectorMatrixMult() {
   Vector<int> result = vec * mat;
   Vector<int> expected({5,11});
 
-  std::cout << vec << "* \n" << mat << ": \n";
+  assert(result == expected);
+}
 
-  std::cout << result << '\n';
+void test_outer_product(){
+  Vector<int> vec1({4,3,5});
+  Vector<int> vec2({2,9});
+
+  auto result = outer_product(vec1, vec2);
+
+  Matrix<int> expected({{8,36}, {6,27}, {10,45}});
+
+
   assert(result == expected);
 }
 }  // namespace
 
 int main() {
-  std::cout << "testing \n";
   testDot();
   testCross();
   testMatrixVectorMult();
   testVectorMatrixMult();
-
-
-  lin::Vector<int> vec({1,2,34,0,543,5,43});
-  for (auto& el : vec) {
-    std::cout << el;
-  }
+  testMatrix_getTranspose();
+  test_outer_product();
 }

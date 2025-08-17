@@ -25,8 +25,8 @@ void checkEqualVectorSizeToMatrixRows(const Vector<X>& vec, const Matrix<T>& mat
 }
 
 
-template <Numeric T, TensorElement X>
-void checkEqualVectorSize(const Vector<T> &first, const Vector<X> &second, const std::string& caller) {
+template <Numeric T>
+void checkEqualVectorSize(const Vector<T> &first, const Vector<T> &second, const std::string& caller) {
   if (first.getSize() != 3 || second.getSize() != 3) {
     std::string msg = "Wrong dimensions for : " + caller + "  " + std::to_string(first.getSize()) +
                       "x" + std::to_string(second.getSize());
@@ -34,20 +34,21 @@ void checkEqualVectorSize(const Vector<T> &first, const Vector<X> &second, const
   }
 }
 
-template <Numeric T>
-Vector<T> cross(const Vector<T> &a, const Vector<T> &b) {
-  return Vector<T>({(a[1] * b[2]) - (a[2] * b[1]),
+template <TensorElement X>
+Vector<X> cross(const Vector<X> &a, const Vector<X> &b) {
+  return Vector<X>({(a[1] * b[2]) - (a[2] * b[1]),
                     (a[2] * b[0]) - (a[0] * b[2]),
                     (a[0] * b[1]) - (a[1] * b[0])});
 }
 
-template <Numeric T>
-Matrix<T> outer_product(const Vector<T> &a, const Vector<T> &b) {
-  checkEqualVectorSize(a,b, "outer_product");
-  Matrix<T> result(a.getSize(), a.getSize());
-  for (size_t i=0; i<a.getSize(); ++i) {
-    for (size_t j=0; j<b.getSize(); ++j) {
-      result(i,j) = a[i] * b[j];
+template <Numeric T>  
+Matrix<T> outer_product(const Vector<T>& first, const Vector<T>& second) {
+  size_t resultRows = first.getSize(); 
+  size_t resultColumns = second.getSize();
+  Matrix<T> result(resultRows, resultColumns);
+  for (size_t r = 0; r < resultRows; ++r) { 
+    for (size_t c = 0; c < resultColumns; ++c) { 
+      result(r,c) = first[r] * second[c];
     }
   }
   return result;
@@ -69,7 +70,6 @@ T dot(const Vector<T> &firstVec, const Vector<T> &secondVec) {
   }
   return result;
 }
-
 
 //Matrix * Vector
 template <Numeric T>
@@ -96,7 +96,7 @@ Vector<T> operator*(const Vector<T> &vec, const Matrix<T> &mat) {
   for (size_t i = 0; i<mat.getColumns(); ++i) {
     T tmp = 0;
     for (size_t j = 0; j < mat.getRows(); ++j) {
-      tmp = vec[j] * mat(j,i);
+      tmp += vec[j] * mat(j,i);
     }
     result[i] = tmp;
   }

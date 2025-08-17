@@ -1,7 +1,7 @@
 #pragma once
 #include <functional>
 #include <iostream>
-#include <vector>
+#include <cassert>
 
 #include "concepts.hpp"
 
@@ -28,7 +28,7 @@ class Matrix {
 
   template <typename Iter>
   Matrix(const size_t &rows, const size_t &pcolumns, Iter containerBeginIt, Iter containerEndIt);
-  Matrix(const std::initializer_list<std::initializer_list<T>> &vec);
+  Matrix(const std::initializer_list<std::initializer_list<T>> &initList);
   Matrix(const size_t &rows, const size_t &columns, const T &value);
   Matrix(const size_t &rows, const size_t &columns);
   Matrix();
@@ -46,7 +46,8 @@ class Matrix {
 
   /*********************** Operators **********************/
 
-  T &operator()(const size_t &p_row, const size_t &column) const;
+  T &operator()(const size_t &p_row, const size_t &column);
+  const T &operator()(const size_t &p_row, const size_t &column) const;
 
   bool operator==(const Matrix<T> &other) const;
 
@@ -150,7 +151,7 @@ namespace lin {
 
 template <Numeric T>
 Matrix<T>::Matrix(const size_t &prows, const size_t &pcolumns, const T &value)
-    : rows(prows), columns(pcolumns) {
+    : rows(prows), columns(pcolumns), matrixData(nullptr) {
   allocateForMatrixData();
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < columns; j++) {
@@ -160,11 +161,11 @@ Matrix<T>::Matrix(const size_t &prows, const size_t &pcolumns, const T &value)
 }
 
 template <Numeric T>
-Matrix<T>::Matrix() : rows(0), columns(0) {
-  allocateForMatrixData();
+Matrix<T>::Matrix() : rows(0), columns(0), matrixData(nullptr) {
 }
+
 template <Numeric T>
-Matrix<T>::Matrix(const size_t &prows, const size_t &pcolumns) : rows(prows), columns(pcolumns) {
+Matrix<T>::Matrix(const size_t &prows, const size_t &pcolumns) : rows(prows), columns(pcolumns), matrixData(nullptr) {
   allocateForMatrixData();
 }
 
@@ -174,7 +175,7 @@ Matrix<T>::Matrix(const size_t &prows,
                   const size_t &pcolumns,
                   Iter containerBeginIt,
                   Iter containerEndIt)
-    : rows(prows), columns(pcolumns) {
+    : rows(prows), columns(pcolumns), matrixData(nullptr) {
   allocateForMatrixData();
   auto startOfFillIt = std::copy(containerBeginIt, containerEndIt, matrixData);
   std::fill(startOfFillIt, (matrixData + (rows * columns)), 0);
@@ -182,8 +183,15 @@ Matrix<T>::Matrix(const size_t &prows,
 
 template <Numeric T>
 Matrix<T>::Matrix(const std::initializer_list<std::initializer_list<T>>& initList)
-    : rows(initList.size()), columns(initList.begin()->size()) {
+    : rows(initList.size()), columns(initList.begin()->size()), matrixData(nullptr) {
   allocateForMatrixData();
+  size_t i = 0;
+  for (auto rowIt = initList.begin(); rowIt != initList.end(); ++rowIt, ++i){
+    size_t j = 0;
+    for (auto columnIt = rowIt->begin(); columnIt != rowIt->end(); ++columnIt, ++j) {
+      (*this)(i,j) =  *columnIt;
+    }
+  }
 
 }
 
@@ -203,7 +211,7 @@ Matrix<T> Matrix<T>::createIdentity(const size_t &rows, const size_t &columns) {
 }
 
 template <Numeric T>
-Matrix<T>::Matrix(const size_t& rows, const size_t& columns, const std::function<T()>& func) : rows(rows), columns(columns) {
+Matrix<T>::Matrix(const size_t& rows, const size_t& columns, const std::function<T()>& func) : rows(rows), columns(columns), matrixData(nullptr) {
   allocateForMatrixData();
   for (int i = 0; i < rows; i++) {
     for (int j = 0; j < columns; j++) {
@@ -224,7 +232,7 @@ Matrix<T> Matrix<T>::getTranspose() const {
 }
 
 template <Numeric T>
-Matrix<T>::Matrix(const Matrix<T> &other) : rows(other.rows), columns(other.columns) {
+Matrix<T>::Matrix(const Matrix<T> &other) : rows(other.rows), columns(other.columns), matrixData(nullptr) {
   allocateForMatrixData();
   for (int i = 0; i < other.rows; i++) {
     for (int j = 0; j < other.columns; j++) {
@@ -248,7 +256,11 @@ Matrix<T>::~Matrix() {
 
 template <Numeric T>
 void Matrix<T>::allocateForMatrixData() {
+  if (rows <= 0 || columns <= 0) {
+    matrixData = nullptr;
+  } else {
   matrixData = new T[rows * columns];
+  }
 }
 
 }  // namespace lin
@@ -258,7 +270,12 @@ void Matrix<T>::allocateForMatrixData() {
 namespace lin {
 
 template <Numeric T>
-T &Matrix<T>::operator()(const size_t &p_row, const size_t &p_column) const {
+const T &Matrix<T>::operator()(const size_t &p_row, const size_t &p_column) const {
+  return *(matrixData + p_column + (p_row * columns));
+}
+
+template <Numeric T>
+T &Matrix<T>::operator()(const size_t &p_row, const size_t &p_column) {
   return *(matrixData + p_column + (p_row * columns));
 }
 

@@ -8,10 +8,9 @@ class NeuralNet {
   public: 
   NeuralNet(size_t inputNodeCount, size_t outputNodeCount, size_t hiddenLayerCount, size_t hiddenNodeCount);
   void train(const lin::Vector<lin::Vector<float>>& trainingData, const lin::Vector<lin::Vector<float>>& labels, size_t epochs, float learningRate);
-  double gradient_descent();
   void forward_pass(const lin::Vector<float>& inputData);
   void backpropagation(const lin::Vector<float>& targetLabel, float learnRate);
-  double calculate_error();
+  lin::Vector<float> classify(const lin::Vector<float>& inputData);
 
   void save_to_file(const std::string& filename);
   explicit NeuralNet(const std::string& filename);
@@ -29,8 +28,7 @@ class NeuralNet {
   lin::Vector<lin::Vector<float>> neurons; 
   lin::Vector<lin::Matrix<float>> weights;
   lin::Vector<lin::Vector<float>> biases;
-  
-  // change this to apply function to set weights
+
   void init_net();
   void init_neurons();
   void init_zvalues();

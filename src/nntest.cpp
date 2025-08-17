@@ -3,31 +3,30 @@
 #include <iomanip>
 #include <iostream>
 
+using lin::Vector;
 
 int main() {
 
-
-
-
   auto trainingData = nn::load_mnist_images("data/train-images-idx3-ubyte");
-  //nn::visualize_mnist_images(training_data);
-  auto normalizedImages = nn::normalize_images(trainingData);
+  auto trainingNormalizedImages = nn::normalize_images(trainingData);
 
-  lin::Vector<uint8_t> labels = nn::load_mnist_labels("data/train-labels-idx1-ubyte");
-  auto oneHotLabels = nn::one_hot_encode(labels);
-  for (int i = 0; i < 10; ++i) {
-    std::cout << "Label: " << static_cast<int>(labels[i]) << " : [" << oneHotLabels[i] << "]\n";
+  lin::Vector<uint8_t> trainingLabels = nn::load_mnist_labels("data/train-labels-idx1-ubyte");
+  auto trainingOneHotLabels = nn::one_hot_encode(trainingLabels);
+
+  nn::NeuralNet net(784, 10, 2, 128);
+  net.train(trainingNormalizedImages, trainingOneHotLabels, 20, 0.01);
+
+
+
+  auto testData = nn::load_mnist_images("data/t10k-images-idx3-ubyte");
+  auto normalizedTestImages = nn::normalize_images(testData);
+
+  lin::Vector<uint8_t> testLabels = nn::load_mnist_labels("data/train-labels-idx1-ubyte");
+  auto testOneHotLabels = nn::one_hot_encode(testLabels);
+
+  for(int i = 0; i < 10; ++i) {
+    Vector<float> result = net.classify(normalizedTestImages[i]);
+    std::cout << "Image " << i << " classified as: " << result << "\n";
   }
-  //nn::print_labels(labels);
-  
-  nn::NeuralNet net(784, 10, 4, 4);
-  std::cout << "\n initial Net: " << net << "\n";
 
-  net.forward_pass(normalizedImages[0]);
-  std::cout << "\n Net After One forward_pass() : " << net << "\n";
-  
-  net.backpropagation(oneHotLabels[0], 1.0);
-  
-  //net.train(normalizedImages, oneHotLabels, 1,1.0);
-  //std::cout << net << "\n";
 }

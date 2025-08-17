@@ -65,7 +65,11 @@ void NeuralNet::forward_pass(const Vector<float>& inputData) {
   neurons[0] = inputData;
   for (size_t i=1; i<neurons.getSize(); ++i) {
     zvalues[i] = (weights[i-1] * neurons[i-1]) + biases[i-1];
-    neurons[i] = apply_activation_function(zvalues[i], sigmoid); 
+    if (i == neurons.getSize() - 1) {
+      neurons[i] = softmax(zvalues[i]);
+    } else {
+      neurons[i] = apply_activation_function(zvalues[i], sigmoid); 
+    }
   }
 }
 
@@ -75,29 +79,39 @@ void NeuralNet::backpropagation(const Vector<float>& targetLabel, float learnRat
   Vector<Vector<float>> deltas(L);
 
   // compute delta Error Vector at last layer
-  deltas[L-1] = hadamard_product(targetLabel - neurons[L-1], apply_activation_function(zvalues[L-1], sigmoid_derivative));
+  deltas[L-1] = neurons[L-1] - targetLabel;
 
-  for (int i = L-2;  i>=0; --i) {
-    //deltas[i] = hadamard_product(
-    //    weights[i+1].getTranspose() * deltas[i+1],
-    //    apply_activation_function(zvalues[i], sigmoid_derivative)
-    //    );
+  for (size_t i = L-2;  i>0; --i) {
+    deltas[i] = hadamard_product(
+        weights[i].getTranspose() * deltas[i+1],
+        apply_activation_function(zvalues[i], sigmoid_derivative)
+        );
   }
 
-  // now deltas[i] contains error Vector for ever Layer in [0,L-1]
-  for (size_t i = 0; i < L; ++i) {
+  // now deltas[i] contains error Vector for every Layer in {1, ..., L-1}
+  for (size_t i = 1; i < L; ++i) {
+    Matrix<float> grad_w = lin::outer_product(deltas[i], neurons[i-1]);
+    const Vector<float>& grad_b = deltas[i];
 
+    weights[i-1] -= learnRate * grad_w;
+    biases[i-1] -= learnRate * grad_b;
   }
 }
 
 //takes in normalized images and one-hot encoded labels in [0,9]
 void NeuralNet::train(const Vector<Vector<float>>& trainingData, const Vector<Vector<float>>& labels, size_t epochs, float learningRate) {
-  for (size_t i = 0; i < trainingData.getSize(); ++i) {
-    for (size_t currentEpoch; currentEpoch <= epochs; ++currentEpoch) {
+  for (size_t currentEpoch = 1; currentEpoch <= epochs; ++currentEpoch) {
+    for (size_t i = 0; i < trainingData.getSize(); ++i) {
       this->forward_pass(trainingData[i]);
       this->backpropagation(labels[i], learningRate);
     }
+    std::cout << " Epoch: "<< currentEpoch << " done, Output Neurons of last Training: " << neurons[hiddenLayerCount+1] << '\n';
   }
+}
+
+Vector<float> NeuralNet::classify(const Vector<float>& inputData) {
+  this->forward_pass(inputData);
+  return neurons[hiddenLayerCount+1];
 }
 
 
@@ -111,7 +125,6 @@ std::ostream& operator<<(std::ostream& outputstream, const NeuralNet& net){
   for (size_t i = 0; i < net.biases.getSize(); ++i) {
     outputstream << i << " : " << std::setprecision(2) <<  net.biases[i] << '\n';
   }
-
 
   outputstream << "\nNeuron Vectors: \n";
   for (size_t i = 0; i < net.neurons.getSize(); ++i) {

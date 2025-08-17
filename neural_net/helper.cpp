@@ -1,6 +1,7 @@
 #include "helper.hpp"
 #include <cmath>
 #include <random>
+#include <algorithm>
 #include <fstream>
 
 namespace nn {
@@ -20,6 +21,28 @@ float sigmoid(float x) {
 
 float sigmoid_derivative(float x) {
   return sigmoid(x) * (1-sigmoid(x)); 
+}
+
+lin::Vector<float> softmax(const lin::Vector<float>& inputVector) {
+  // softmax function, determine largest first and subtract from each to make exp() numerically stable
+  Vector<float> result(inputVector.getSize());
+  float total = 0.0f;
+  float max = inputVector[0];
+
+  for (size_t i = 1; i < inputVector.getSize(); ++i) {
+    max = std::max(max, inputVector[i]);
+  }
+
+  for (size_t i = 0; i < inputVector.getSize(); ++i) {
+    result[i] = std::exp(inputVector[i] - max);
+    total += result[i];
+  }
+
+  for (size_t i = 0; i < inputVector.getSize(); ++i) {
+    result[i] /= total;
+  }
+
+  return result;
 }
 
 float uniform_distribution_in(float lower, float upper) {
@@ -94,7 +117,7 @@ Vector<uint8_t> load_mnist_labels(const std::string& filename){
 Vector<Vector<float>> normalize_images(const Vector<Vector<uint8_t>>& images) {
   Vector<Vector<float>> results(images.getSize());
   for(int i=0; i<images.getSize(); ++i) {
-    Vector<float> normalized(images[i].getSize());//size is known beforehand maybe allocat beforhand but premature since Vector is static and can be used here
+    Vector<float> normalized(images[i].getSize());
     for(int j=0; j<images[i].getSize(); ++j) {
       normalized[j] = (static_cast<float>(images[i][j])/255.0f); //scale down 8 bit integer to [0,1]
     }
