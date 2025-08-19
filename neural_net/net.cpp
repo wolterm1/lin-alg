@@ -5,6 +5,7 @@
 #include <cstdlib>
 #include <iomanip>
 #include <fstream>
+#include <filesystem>
 
 using lin::Vector;
 using lin::Matrix;
@@ -15,6 +16,13 @@ namespace nn {
 // allocates Weights, Neurons and Weights for given nn dimensions, biases start with 0
 NeuralNet::NeuralNet(size_t inputNodeCount, size_t outputNodeCount, size_t hiddenLayerCount, size_t hiddenNodeCount) : inputNodeCount(inputNodeCount), outputNodeCount(outputNodeCount), hiddenLayerCount(hiddenLayerCount), hiddenNodeCount(hiddenNodeCount) {
   init_net();
+}
+
+NeuralNet::NeuralNet(const lin::Vector<lin::Matrix<float>>& inWeights, const lin::Vector<lin::Vector<float>>& inBiases) : inputNodeCount(inWeights[0].getColumns()), outputNodeCount(inWeights[inWeights.getSize()-1].getColumns()), hiddenLayerCount(inWeights.getSize()-1), hiddenNodeCount(inWeights[0].getRows()) {
+  init_neurons();
+  init_zvalues();
+  weights = inWeights;
+  biases = inBiases;
 }
 
 void NeuralNet::init_net() {
@@ -100,11 +108,13 @@ void NeuralNet::backpropagation(const Vector<float>& targetLabel, float learnRat
 }
 
 //takes in normalized images and one-hot encoded labels in [0,9]
-void NeuralNet::train(const Vector<Vector<float>>& trainingData, const Vector<Vector<float>>& labels, size_t epochs, float learningRate) {
+void NeuralNet::train(const Vector<Vector<float>>& trainingData, const Vector<Vector<float>>& labels, size_t epochs, size_t batchSize, float learningRate) {
   for (size_t currentEpoch = 1; currentEpoch <= epochs; ++currentEpoch) {
+    std::cout << "Starting Epoch " << currentEpoch << '\n';
     for (size_t i = 0; i < trainingData.getSize(); ++i) {
-      this->forward_pass(trainingData[i]);
+      this->forward_pass(trainingData[i], batchSize);
       this->backpropagation(labels[i], learningRate);
+      std::cout << "Training on Image " << i + 1 << "\r" << std::flush ;
     }
     std::cout << " Epoch: "<< currentEpoch << " done, Output Neurons of last Training: " << neurons[hiddenLayerCount+1] << '\n';
   }
@@ -115,28 +125,73 @@ Vector<float> NeuralNet::classify(const Vector<float>& inputData) {
   return neurons[hiddenLayerCount+1];
 }
 
-void NeuralNet::save_to_file(const std::string& filename){
 
-  std::fstream file(filename + ".nn", std::ios::trunc | std::ios::out | std::ios::binary);
+void NeuralNet::save_to_file(const std::string& filename){
+  if (std::filesystem::exists(filename)) {
+    auto renamedString = genTimeStampForFilename(filename); 
+    std::filesystem::rename(filename, renamedString.str());  // Datei umbenennen
+    std::cout << "File " << filename << " already exists, saving as: " << renamedString.str() << '\n';
+  }
+
+  std::fstream file(filename, std::ios::trunc | std::ios::out | std::ios::binary);
   
   std::string magic = "KNNET";
-  file.write(magic.data(), magic.length() * sizeof(char));
+  file.write(magic.data(), 5 * sizeof(char));
 
-  size_t weightMatricesCount = weights.getSize(); 
+  uint64_t weightMatricesCount = weights.getSize(); 
   file.write(reinterpret_cast<char*>(&weightMatricesCount), sizeof(weightMatricesCount));
 
   for (size_t i = 0; i < weightMatricesCount; ++i) {
 
-    size_t rows = weights[i].getRows();
-    size_t cols = weights[i].getColumns();
+    uint64_t rows = weights[i].getRows();
     file.write(reinterpret_cast<char*>(&rows), sizeof(rows));
+    uint64_t cols = weights[i].getColumns();
     file.write(reinterpret_cast<char*>(&cols), sizeof(cols));
     file.write(reinterpret_cast<char*>(weights[i].data()), rows * cols * sizeof(float));
 
-    size_t biasSize = biases[i].getSize();
+    uint64_t biasSize = biases[i].getSize();
     file.write(reinterpret_cast<char*>(&biasSize), sizeof(biasSize));
     file.write(reinterpret_cast<char*>(biases[i].data()), biasSize * sizeof(float));
   }
+}
+
+
+NeuralNet NeuralNet::load_from_file(const std::string& filename) {
+  std::fstream file(filename, std::ios::in | std::ios::binary);
+  std::string magic(5, ' ');
+  uint64_t weightMatricesCount;
+
+  file.read(magic.data(), 5 * sizeof(char));
+  if (magic != "KNNET") {
+    throw std::invalid_argument("Given File does not encode a Neural Net");
+  }
+
+  file.read(reinterpret_cast<char*>(&weightMatricesCount), sizeof(weightMatricesCount));
+  Vector<Matrix<float>> inWeights(weightMatricesCount);
+  Vector<Vector<float>> inBiases(weightMatricesCount);
+
+
+  for (size_t i = 0; i < weightMatricesCount; ++i) {
+    uint64_t rows;
+    file.read(reinterpret_cast<char*>(&rows), sizeof(rows));
+    uint64_t cols;
+    file.read(reinterpret_cast<char*>(&cols), sizeof(cols));
+
+    std::cout << "Rows: " << rows << " Cols: " << cols << '\n';
+
+    Matrix<float> mat(rows, cols);
+    file.read(reinterpret_cast<char*>(mat.data()), rows * cols * sizeof(float));
+
+    uint64_t biasSize;
+    file.read(reinterpret_cast<char*>(&biasSize), sizeof(biasSize));
+    Vector<float> vec(rows);
+    file.read(reinterpret_cast<char*>(vec.data()), biasSize * sizeof(float));
+
+    inWeights[i] = mat;
+    inBiases[i] = vec;
+  }
+
+  return NeuralNet(inWeights, inBiases);
 }
 
 

@@ -3,6 +3,7 @@
 #include <random>
 #include <algorithm>
 #include <fstream>
+#include <chrono>
 
 namespace nn {
 
@@ -159,6 +160,13 @@ void print_labels(const Vector<uint8_t>& labels) {
   }
 }
 
+std::stringstream genTimeStampForFilename(const std::string& filename) {
+  auto t = std::chrono::system_clock::now();
+  auto in_time_t = std::chrono::system_clock::to_time_t(t);
+  std::stringstream ss;
+  ss << filename << std::put_time(std::localtime(&in_time_t), "%Y%m%d_%H%M%S");
+  return ss;
+}
 
 
 

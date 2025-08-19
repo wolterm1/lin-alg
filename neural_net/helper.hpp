@@ -25,11 +25,11 @@ lin::Vector<lin::Vector<float>> normalize_images(const lin::Vector<lin::Vector<u
 
 lin::Vector<lin::Vector<float>> one_hot_encode(const lin::Vector<uint8_t>& labels);
 
-
 void visualize_mnist_images(const lin::Vector<lin::Vector<uint8_t>>& vec);
 
 void print_labels(const lin::Vector<uint8_t>& vec);
 
+std::stringstream genTimeStampForFilename(const std::string& filename); 
 
 
 }

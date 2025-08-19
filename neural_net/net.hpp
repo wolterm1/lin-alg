@@ -7,13 +7,14 @@ namespace nn {
 class NeuralNet {
   public: 
   NeuralNet(size_t inputNodeCount, size_t outputNodeCount, size_t hiddenLayerCount, size_t hiddenNodeCount);
-  void train(const lin::Vector<lin::Vector<float>>& trainingData, const lin::Vector<lin::Vector<float>>& labels, size_t epochs, float learningRate);
-  void forward_pass(const lin::Vector<float>& inputData);
+  NeuralNet(const lin::Vector<lin::Matrix<float>>& inWeights, const lin::Vector<lin::Vector<float>>& inBiases); 
+  void train(const lin::Vector<lin::Vector<float>>& trainingData, const lin::Vector<lin::Vector<float>>& labels, size_t epochs, size_t batchSize, float learningRate);
+  void forward_pass(const lin::Vector<float>& inputData, size_t batchSize);
   void backpropagation(const lin::Vector<float>& targetLabel, float learnRate);
   lin::Vector<float> classify(const lin::Vector<float>& inputData);
 
   void save_to_file(const std::string& filename);
-  static NeuralNet load_from_file(const std::string& filenname); // factory method to construct a Neural Net from File
+  static NeuralNet load_from_file(const std::string& filename); // factory method to construct a Neural Net from File
 
   friend std::ostream& operator<<(std::ostream& outputstream, const NeuralNet& net);
 

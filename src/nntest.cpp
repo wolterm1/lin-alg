@@ -14,20 +14,22 @@ int main() {
   auto trainingOneHotLabels = nn::one_hot_encode(trainingLabels);
 
   nn::NeuralNet net(784, 10, 2, 128);
+  net.train(trainingNormalizedImages, trainingOneHotLabels, 20, 0.01);
+
   net.save_to_file("test");
-  //net.train(trainingNormalizedImages, trainingOneHotLabels, 20, 0.01);
+  //nn::NeuralNet::load_from_file("test");
 
 
+  //auto testData = nn::load_mnist_images("data/t10k-images-idx3-ubyte");
+  //auto normalizedTestImages = nn::normalize_images(testData);
 
-  auto testData = nn::load_mnist_images("data/t10k-images-idx3-ubyte");
-  auto normalizedTestImages = nn::normalize_images(testData);
+  //lin::Vector<uint8_t> testLabels = nn::load_mnist_labels("data/train-labels-idx1-ubyte");
+  //auto testOneHotLabels = nn::one_hot_encode(testLabels);
 
-  lin::Vector<uint8_t> testLabels = nn::load_mnist_labels("data/train-labels-idx1-ubyte");
-  auto testOneHotLabels = nn::one_hot_encode(testLabels);
+  //for(int i = 0; i < 10; ++i) {
+  //  Vector<float> result = net.classify(normalizedTestImages[i]);
+  //  std::cout << "Image " << i << " classified as: " << result << "\n";
+  //}
 
-  for(int i = 0; i < 10; ++i) {
-    Vector<float> result = net.classify(normalizedTestImages[i]);
-    std::cout << "Image " << i << " classified as: " << result << "\n";
-  }
 
 }
