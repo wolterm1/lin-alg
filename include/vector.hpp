@@ -47,6 +47,8 @@ class Vector {
   Vector<T> operator-(const Vector<T> &other) const;
   Vector<T> &operator*=(const T &scalar);
   Vector<T> operator*(const T &scalar) const;
+  Vector<T> &operator/=(const T &scalar);
+  Vector<T> operator/(const T &scalar) const;
   Vector<T>& hadamard_product_in(const Vector<T>& other);
   Vector<T> hadamard_product(const Vector<T>& other);
 
@@ -247,6 +249,20 @@ Vector<T> Vector<T>::operator*(const T &scalar) const{
   return copy;
 }
 
+template <TensorElement T>
+Vector<T> &Vector<T>::operator/=(const T &scalar) {
+  for (int i = 0; i < size; ++i) {
+    (*this)[i] /= scalar;
+  }
+  return *this;
+}
+
+template <TensorElement T>
+Vector<T> Vector<T>::operator/(const T &scalar) const{
+  Vector<T> copy(*this);
+  copy /= scalar;
+  return copy;
+}
 template <TensorElement T>
 Vector<T>& Vector<T>::hadamard_product_in(const Vector<T>& other) {
   for (size_t i = 0; i<size; ++i){

@@ -21,6 +21,7 @@ NeuralNet::NeuralNet(size_t inputNodeCount, size_t outputNodeCount, size_t hidde
 NeuralNet::NeuralNet(const lin::Vector<lin::Matrix<float>>& inWeights, const lin::Vector<lin::Vector<float>>& inBiases) : inputNodeCount(inWeights[0].getColumns()), outputNodeCount(inWeights[inWeights.getSize()-1].getColumns()), hiddenLayerCount(inWeights.getSize()-1), hiddenNodeCount(inWeights[0].getRows()) {
   init_neurons();
   init_zvalues();
+  init_gradients();
   weights = inWeights;
   biases = inBiases;
 }
@@ -30,6 +31,7 @@ void NeuralNet::init_net() {
   init_zvalues();
   init_weights();
   init_biases();
+  init_gradients();
 }
 
 
@@ -69,6 +71,14 @@ void NeuralNet::init_biases() {
   }
 }
 
+void NeuralNet::init_gradients() {
+  weightGradientSum = Vector<Matrix<float>>(hiddenLayerCount+1);
+  biasGradientSum = Vector<Vector<float>>(hiddenLayerCount+1);
+  for (size_t i = 0; i <= hiddenLayerCount; ++i) {
+    weightGradientSum[i] = Matrix<float>(neurons[i+1].getSize(), neurons[i].getSize(), 0.0f);
+    biasGradientSum[i] = Vector<float>(neurons[i+1].getSize(), 0.0f);
+  }
+}
 // initializes input Neurons with given inputVector and then computes neuron values with biases and activation Function
 void NeuralNet::forward_pass(const Vector<float>& inputData) {
   neurons[0] = inputData;
@@ -99,22 +109,32 @@ void NeuralNet::backpropagation(const Vector<float>& targetLabel, float learnRat
 
   // now deltas[i] contains error Vector for every Layer in {1, ..., L-1}
   for (size_t i = 1; i < L; ++i) {
-    Matrix<float> grad_w = lin::outer_product(deltas[i], neurons[i-1]);
-    const Vector<float>& grad_b = deltas[i];
+    Matrix<float> weightGradientForInstance = lin::outer_product(deltas[i], neurons[i-1]);
+    const Vector<float>& biasGradientForInstance = deltas[i];
 
-    weights[i-1] -= learnRate * grad_w;
-    biases[i-1] -= learnRate * grad_b;
+    weightGradientSum[i-1] += weightGradientForInstance; 
+    biasGradientSum[i-1] += biasGradientForInstance;
   }
 }
 
-//takes in normalized images and one-hot encoded labels in [0,9]
+void NeuralNet::update_weights(float learnRate, size_t batchSize) {
+  for (size_t i = 0; i < weights.getSize(); ++i) {
+    weights[i] -= learnRate * weightGradientSum[i] / static_cast<float>(batchSize);
+    biases[i] -= learnRate * biasGradientSum[i] / static_cast<float>(batchSize);
+  }
+}
+
+// takes in normalized images and one-hot encoded labels in [0,9]
+// Iterates epochs often over training sample, in each epoch, calculate forward pass for batchSize trainingData and get get average gradient which is then applied in update weights
 void NeuralNet::train(const Vector<Vector<float>>& trainingData, const Vector<Vector<float>>& labels, size_t epochs, size_t batchSize, float learningRate) {
   for (size_t currentEpoch = 1; currentEpoch <= epochs; ++currentEpoch) {
-    std::cout << "Starting Epoch " << currentEpoch << '\n';
-    for (size_t i = 0; i < trainingData.getSize(); ++i) {
-      this->forward_pass(trainingData[i], batchSize);
-      this->backpropagation(labels[i], learningRate);
-      std::cout << "Training on Image " << i + 1 << "\r" << std::flush ;
+    for (size_t currentBatch = 1; currentBatch <= batchSize; ++currentBatch) {
+      for (size_t i = 0; i < trainingData.getSize(); ++i) {
+        this->forward_pass(trainingData[i]);
+        this->backpropagation(labels[i], learningRate);
+        std::cout << "Training in Epoch " << currentEpoch << " on Image " << i + 1 << " on Batch " << currentBatch << "\r" << std::flush ;
+      }
+      this->update_weights(learningRate, batchSize);
     }
     std::cout << " Epoch: "<< currentEpoch << " done, Output Neurons of last Training: " << neurons[hiddenLayerCount+1] << '\n';
   }

@@ -6,7 +6,6 @@
 using lin::Vector;
 
 int main() {
-
   auto trainingData = nn::load_mnist_images("data/train-images-idx3-ubyte");
   auto trainingNormalizedImages = nn::normalize_images(trainingData);
 
@@ -14,7 +13,7 @@ int main() {
   auto trainingOneHotLabels = nn::one_hot_encode(trainingLabels);
 
   nn::NeuralNet net(784, 10, 2, 128);
-  net.train(trainingNormalizedImages, trainingOneHotLabels, 20, 0.01);
+  net.train(trainingNormalizedImages, trainingOneHotLabels, 10, 100, 0.01);
 
   net.save_to_file("test");
   //nn::NeuralNet::load_from_file("test");
