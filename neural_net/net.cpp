@@ -125,14 +125,19 @@ void NeuralNet::update_weights(float learnRate, size_t batchSize) {
 }
 
 // takes in normalized images and one-hot encoded labels in [0,9]
-// Iterates epochs often over training sample, in each epoch, calculate forward pass for batchSize trainingData and get get average gradient which is then applied in update weights
-void NeuralNet::train(const Vector<Vector<float>>& trainingData, const Vector<Vector<float>>& labels, size_t epochs, size_t batchSize, float learningRate) {
+// Iterates epochs often over training sample, in each epoch, calculate forward pass for batchSize trainingData and get get average gradient which is then applied in update_weights()
+void NeuralNet::train(Vector<Vector<float>>& trainingData, Vector<Vector<float>>& labels, size_t epochs, size_t batchSize, float learningRate) {
+  std::cout << "Started Training on " << trainingData.getSize() << " trainingData, \n" << "Model Parameters\n" << 
+    "Epochs: " << epochs << '\n' <<
+    "Batch Size: " << batchSize << '\n' <<
+    "Learning Rate: " << learningRate << '\n';
   for (size_t currentEpoch = 1; currentEpoch <= epochs; ++currentEpoch) {
-    for (size_t currentBatch = 1; currentBatch <= batchSize; ++currentBatch) {
-      for (size_t i = 0; i < trainingData.getSize(); ++i) {
+    shuffle(trainingData, labels);
+    for (size_t i = 0; i < trainingData.getSize(); ++i) {
+      for (size_t currentBatch = 1; currentBatch <= batchSize; ++currentBatch) {
         this->forward_pass(trainingData[i]);
         this->backpropagation(labels[i], learningRate);
-        std::cout << "Training in Epoch " << currentEpoch << " on Image " << i + 1 << " on Batch " << currentBatch << "\r" << std::flush ;
+        //std::cout << "Training in Epoch " << currentEpoch << " on Image " << i + 1 << " on Batch " << currentBatch << "\r" << std::flush ;
       }
       this->update_weights(learningRate, batchSize);
     }

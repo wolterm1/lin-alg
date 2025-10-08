@@ -2,10 +2,13 @@
 #include "../include/vector.hpp"
 #include <cstdint>
 #include <functional>
+#include <utility>
 
 namespace nn {
 
 lin::Vector<float> apply_activation_function(lin::Vector<float>& vec, const std::function<float(float)>& func);
+
+void shuffle(lin::Vector<lin::Vector<float>>& trainingData, lin::Vector<lin::Vector<float>>& labels);
 
 float sigmoid(float x);
 

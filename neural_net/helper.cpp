@@ -9,6 +9,35 @@ namespace nn {
 
 using lin::Vector;
 
+void shuffle(lin::Vector<lin::Vector<float>>& trainingData, lin::Vector<lin::Vector<float>>& labels) {
+
+  // create index list
+  Vector<size_t> indexList(trainingData.getSize());
+  for (size_t i = 0; i < indexList.getSize(); ++i) {
+    indexList[i] = i;
+  }
+
+  // shuffle index list
+  std::random_device rand;
+  std::mt19937 generator(rand());
+  std::shuffle(indexList.begin(), indexList.end(), generator);
+
+  // project each element in tData and labels onto their new index
+  // this algorithm swaps the element at i (if not done) to its correct index according to the shuffled indexList
+  // then it keeps swapping the previously swapped element at i with its corresponding index in indexList until it detects a cycle
+  // meaning the element at i is at its correct index according to indexList
+  Vector<bool> done(trainingData.getSize(), false);
+  for (size_t i = 0; i < trainingData.getSize(); ++i) {
+    size_t j=i; 
+    while(!done[i]) { 
+      std::swap(trainingData[i], trainingData[indexList[j]]);
+      std::swap(labels[i], trainingData[indexList[j]]);
+      done[indexList[j]] = true;
+      j = indexList[j];
+    }
+  }
+}
+
 Vector<float> apply_activation_function(Vector<float>& vec, const std::function<float(float)>& func) {
   for(size_t i = 0; i<vec.getSize(); ++i) {
     vec[i] = func(vec[i]);
