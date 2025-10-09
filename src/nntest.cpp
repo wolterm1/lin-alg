@@ -16,6 +16,10 @@ int main() {
   net.train(trainingNormalizedImages, trainingOneHotLabels, 10, 100, 0.01);
 
   net.save_to_file("test");
+
+  auto testData = nn::normalize_images(nn::load_mnist_images("data/t10k-images-idx3-ubyte"));
+  auto testLabels = nn::load_mnist_labels("data/t10k-labels-idx3-ubyte");
+  net.evaluate(testData, testLabels);
   //nn::NeuralNet::load_from_file("test");
 
 

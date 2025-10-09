@@ -38,6 +38,16 @@ void shuffle(lin::Vector<lin::Vector<float>>& trainingData, lin::Vector<lin::Vec
   }
 }
 
+int getIndexOfMax(Vector<float>& vec) {
+  size_t maxSoFarIndex = 0;
+  for (size_t i = 0; i < vec.getSize(); ++i) {
+    if (vec[i] > vec[maxSoFarIndex]) {
+      maxSoFarIndex = i;
+    }
+  }
+  return maxSoFarIndex;
+}
+
 Vector<float> apply_activation_function(Vector<float>& vec, const std::function<float(float)>& func) {
   for(size_t i = 0; i<vec.getSize(); ++i) {
     vec[i] = func(vec[i]);

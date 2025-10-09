@@ -10,6 +10,8 @@ lin::Vector<float> apply_activation_function(lin::Vector<float>& vec, const std:
 
 void shuffle(lin::Vector<lin::Vector<float>>& trainingData, lin::Vector<lin::Vector<float>>& labels);
 
+int getIndexOfMax(lin::Vector<float>& vec);
+
 float sigmoid(float x);
 
 float sigmoid_derivative(float x);

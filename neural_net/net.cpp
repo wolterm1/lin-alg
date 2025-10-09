@@ -1,11 +1,13 @@
 #include "net.hpp"
 #include "../include/linalg.hpp"
 #include "helper.hpp"
+#include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <iomanip>
 #include <fstream>
 #include <filesystem>
+#include <EvalResult.hpp>
 
 using lin::Vector;
 using lin::Matrix;
@@ -148,6 +150,19 @@ void NeuralNet::train(Vector<Vector<float>>& trainingData, Vector<Vector<float>>
 Vector<float> NeuralNet::classify(const Vector<float>& inputData) {
   this->forward_pass(inputData);
   return neurons[hiddenLayerCount+1];
+}
+
+EvalResult NeuralNet::evaluate(const lin::Vector<lin::Vector<float>>& testData, const lin::Vector<uint8_t>& labels){
+  float accuracy = 0.0;
+  for (size_t i= 0; i < testData.getSize(); ++i) {
+    auto predictionDistribution = this->classify(testData[i]);
+    int prediction = getIndexOfMax(predictionDistribution);
+    if (prediction == labels[i]) {
+      accuracy += 1.0;
+    }
+  }
+  accuracy /= static_cast<float>(testData.getSize());
+
 }
 
 
