@@ -7,7 +7,7 @@
 #include <iomanip>
 #include <fstream>
 #include <filesystem>
-#include <EvalResult.hpp>
+#include "EvalResult.hpp"
 
 using lin::Vector;
 using lin::Matrix;
@@ -55,14 +55,15 @@ void NeuralNet::init_zvalues() {
   zvalues[hiddenLayerCount+1] = Vector<float>(outputNodeCount, 0.0f);
 }
 
-// Xavier Weight Init
+// He init
 void NeuralNet::init_weights() {
   weights = Vector<Matrix<float>>(hiddenLayerCount+1);
   for (size_t i=0; i <= hiddenLayerCount; ++i) {
     size_t fan_in = neurons[i].getSize(); 
     size_t fan_out = neurons[i+1].getSize(); 
-    float limit = std::sqrt(6.0f / (static_cast<float>(fan_in) + static_cast<float>(fan_out)));
-    weights[i] = Matrix<float>(neurons[i+1].getSize(), neurons[i].getSize(), std::bind(uniform_distribution_in, -limit, limit));
+    float lower = 0.0f;
+    float upper = std::sqrt(2.0f/static_cast<float>(fan_in));
+    weights[i] = Matrix<float>(neurons[i+1].getSize(), neurons[i].getSize(), std::bind(normal_distribution_in, lower, upper));
   }
 }
 
@@ -85,11 +86,12 @@ void NeuralNet::init_gradients() {
 void NeuralNet::forward_pass(const Vector<float>& inputData) {
   neurons[0] = inputData;
   for (size_t i=1; i<neurons.getSize(); ++i) {
+    assert(weights[i-1].getColumns() == neurons[i-1].getSize());
     zvalues[i] = (weights[i-1] * neurons[i-1]) + biases[i-1];
     if (i == neurons.getSize() - 1) {
-      neurons[i] = softmax(zvalues[i]);
+      neurons[i] = softmax(zvalues[i]); //apply softmax at last layer
     } else {
-      neurons[i] = apply_activation_function(zvalues[i], sigmoid); 
+      neurons[i] = apply_activation_function(zvalues[i], relu); 
     }
   }
 }
@@ -103,9 +105,11 @@ void NeuralNet::backpropagation(const Vector<float>& targetLabel, float learnRat
   deltas[L-1] = neurons[L-1] - targetLabel;
 
   for (size_t i = L-2;  i>0; --i) {
+
+    assert(weights[i].getTranspose().getColumns() == deltas[i+1].getSize());
     deltas[i] = hadamard_product(
         weights[i].getTranspose() * deltas[i+1],
-        apply_activation_function(zvalues[i], sigmoid_derivative)
+        apply_activation_function(zvalues[i], relu_derivative)
         );
   }
 
@@ -123,6 +127,8 @@ void NeuralNet::update_weights(float learnRate, size_t batchSize) {
   for (size_t i = 0; i < weights.getSize(); ++i) {
     weights[i] -= learnRate * weightGradientSum[i] / static_cast<float>(batchSize);
     biases[i] -= learnRate * biasGradientSum[i] / static_cast<float>(batchSize);
+    weightGradientSum[i] = Matrix(weightGradientSum[i].getRows(), weightGradientSum[i].getColumns(), 0.0f);
+    biasGradientSum[i] = Vector(biasGradientSum[i].getSize(), 0.0f);
   }
 }
 
@@ -136,14 +142,15 @@ void NeuralNet::train(Vector<Vector<float>>& trainingData, Vector<Vector<float>>
   for (size_t currentEpoch = 1; currentEpoch <= epochs; ++currentEpoch) {
     shuffle(trainingData, labels);
     for (size_t i = 0; i < trainingData.getSize(); ++i) {
-      for (size_t currentBatch = 1; currentBatch <= batchSize; ++currentBatch) {
-        this->forward_pass(trainingData[i]);
-        this->backpropagation(labels[i], learningRate);
-        //std::cout << "Training in Epoch " << currentEpoch << " on Image " << i + 1 << " on Batch " << currentBatch << "\r" << std::flush ;
+      this->forward_pass(trainingData[i]);
+      this->backpropagation(labels[i], learningRate);
+      //std::cout << "Training in Epoch " << currentEpoch << " on Image " << i + 1 << " in Batch " << i/ batchSize << "\r"  ;
+      if ((i+1) % batchSize == 0) {
+        this->update_weights(learningRate, batchSize);
+        std::cout << "Finished Batch " << (i+1)/batchSize << " in Epoch " << currentEpoch << '\r' << std::flush;
       }
-      this->update_weights(learningRate, batchSize);
     }
-    std::cout << " Epoch: "<< currentEpoch << " done, Output Neurons of last Training: " << neurons[hiddenLayerCount+1] << '\n';
+    std::cout << "Epoch: " << currentEpoch << " done\n";
   }
 }
 
@@ -152,17 +159,17 @@ Vector<float> NeuralNet::classify(const Vector<float>& inputData) {
   return neurons[hiddenLayerCount+1];
 }
 
-EvalResult NeuralNet::evaluate(const lin::Vector<lin::Vector<float>>& testData, const lin::Vector<uint8_t>& labels){
+EvalResult NeuralNet::evaluate(const lin::Vector<lin::Vector<float>>& testData, const lin::Vector<lin::Vector<float>>& labels){
   float accuracy = 0.0;
   for (size_t i= 0; i < testData.getSize(); ++i) {
     auto predictionDistribution = this->classify(testData[i]);
     int prediction = getIndexOfMax(predictionDistribution);
-    if (prediction == labels[i]) {
+    if (prediction == getIndexOfMax(labels[i])) {
       accuracy += 1.0;
     }
   }
   accuracy /= static_cast<float>(testData.getSize());
-
+  return EvalResult(accuracy, 1.0, 1.0);
 }
 
 

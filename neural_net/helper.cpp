@@ -31,7 +31,7 @@ void shuffle(lin::Vector<lin::Vector<float>>& trainingData, lin::Vector<lin::Vec
     size_t j=i; 
     while(!done[i]) { 
       std::swap(trainingData[i], trainingData[indexList[j]]);
-      std::swap(labels[i], trainingData[indexList[j]]);
+      std::swap(labels[i], labels[indexList[j]]);
       done[indexList[j]] = true;
       j = indexList[j];
     }
@@ -63,6 +63,15 @@ float sigmoid_derivative(float x) {
   return sigmoid(x) * (1-sigmoid(x)); 
 }
 
+float relu(float x) {
+  return std::max(0.0f, x);
+}
+
+float relu_derivative(float x) {
+  return x > 0 ? 1.0f : 0.0f;
+}
+
+
 lin::Vector<float> softmax(const lin::Vector<float>& inputVector) {
   // softmax function, determine largest first and subtract from each to make exp() numerically stable
   Vector<float> result(inputVector.getSize());
@@ -89,6 +98,13 @@ float uniform_distribution_in(float lower, float upper) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
     std::uniform_real_distribution<> dist(lower, upper);
+    return static_cast<float>(dist(gen));
+}
+
+float normal_distribution_in(float lower, float upper) {
+    static std::random_device rd;
+    static std::mt19937 gen(rd());
+    std::normal_distribution<float> dist(lower, upper);
     return static_cast<float>(dist(gen));
 }
 

@@ -5,6 +5,25 @@
 
 using lin::Vector;
 
+lin::Vector<lin::Vector<float>> sliceData(const lin::Vector<lin::Vector<float>>& tData) {
+  lin::Vector<lin::Vector<float>> result(100);
+  for (size_t i = 0; i < result.getSize(); ++i) {
+    result[i] = tData[i];
+  }
+  return result;
+}
+
+
+lin::Vector<lin::Vector<float>> sliceLabels(const lin::Vector<lin::Vector<float>>& onehotLabels) {
+  lin::Vector<lin::Vector<float>> result(100);
+  for (size_t i = 0; i < result.getSize(); ++i) {
+    result[i] = onehotLabels[i];
+  }
+  return result;
+}
+
+
+
 int main() {
   auto trainingData = nn::load_mnist_images("data/train-images-idx3-ubyte");
   auto trainingNormalizedImages = nn::normalize_images(trainingData);
@@ -13,21 +32,17 @@ int main() {
   auto trainingOneHotLabels = nn::one_hot_encode(trainingLabels);
 
   nn::NeuralNet net(784, 10, 2, 128);
-  net.train(trainingNormalizedImages, trainingOneHotLabels, 10, 100, 0.01);
+ // auto sliceD = sliceData(trainingNormalizedImages);
+ // auto sliceL = sliceLabels(trainingOneHotLabels);
+
+  net.train(trainingNormalizedImages, trainingOneHotLabels, 20, 100, 0.001);
 
   net.save_to_file("test");
 
   auto testData = nn::normalize_images(nn::load_mnist_images("data/t10k-images-idx3-ubyte"));
-  auto testLabels = nn::load_mnist_labels("data/t10k-labels-idx3-ubyte");
-  net.evaluate(testData, testLabels);
-  //nn::NeuralNet::load_from_file("test");
+  auto testLabels = nn::one_hot_encode(nn::load_mnist_labels("data/t10k-labels-idx1-ubyte"));
 
-
-  //auto testData = nn::load_mnist_images("data/t10k-images-idx3-ubyte");
-  //auto normalizedTestImages = nn::normalize_images(testData);
-
-  //lin::Vector<uint8_t> testLabels = nn::load_mnist_labels("data/train-labels-idx1-ubyte");
-  //auto testOneHotLabels = nn::one_hot_encode(testLabels);
+  std::cout << net.evaluate(testData, testLabels);
 
   //for(int i = 0; i < 10; ++i) {
   //  Vector<float> result = net.classify(normalizedTestImages[i]);
@@ -36,3 +51,6 @@ int main() {
 
 
 }
+
+
+

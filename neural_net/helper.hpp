@@ -16,9 +16,15 @@ float sigmoid(float x);
 
 float sigmoid_derivative(float x);
 
+float relu(float x);
+
+float relu_derivative(float x);
+
 lin::Vector<float> softmax(const lin::Vector<float>& inputVector);
 
 float uniform_distribution_in(float lower, float upper);
+
+float normal_distribution_in(float lower, float upper);
 
 float calculate_mse(const lin::Vector<float>& actual, const lin::Vector<float>& target);
 

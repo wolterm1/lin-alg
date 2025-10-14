@@ -15,7 +15,7 @@ class NeuralNet {
   void backpropagation(const lin::Vector<float>& targetLabel, float learnRate);
   void update_weights(float LearnRate, size_t batchSize);
   lin::Vector<float> classify(const lin::Vector<float>& inputData);
-  EvalResult evaluate(const lin::Vector<lin::Vector<float>>& testData, const lin::Vector<uint8_t>& labels);
+  EvalResult evaluate(const lin::Vector<lin::Vector<float>>& testData, const lin::Vector<lin::Vector<float>>& labels);
 
   void save_to_file(const std::string& filename);
   static NeuralNet load_from_file(const std::string& filename); // factory method to construct a Neural Net from File

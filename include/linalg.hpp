@@ -9,7 +9,7 @@ void checkEqualMatrixColumnsToVectorSize(const Matrix<T> &mat, const Vector<X> &
   if (mat.getColumns() != vec.getSize()) {
     std::string msg =
         "Wrong dimensions for Matrix*Vector:\n MatrixColumns:" + std::to_string(mat.getColumns()) +
-        "\nVector size:\n" + std::to_string(vec.getSize());
+        "\nVector size: " + std::to_string(vec.getSize());
     throw std::invalid_argument(msg);
   }
 }
@@ -19,7 +19,7 @@ void checkEqualVectorSizeToMatrixRows(const Vector<X>& vec, const Matrix<T>& mat
   if (mat.getRows() != vec.getSize()) {
     std::string msg =
         "Wrong dimensions for Matrix*Vector:\n MatrixRows:" + std::to_string(mat.getColumns()) +
-        "\nVector size:\n" + std::to_string(vec.getSize());
+        "\nVector size: " + std::to_string(vec.getSize());
     throw std::invalid_argument(msg);
   }
 }
