@@ -136,23 +136,20 @@ void NeuralNet::update_weights(float learnRate, size_t batchSize) {
 
 // takes in normalized images and one-hot encoded labels in [0,9]
 // Iterates epochs often over training sample, in each epoch, calculate forward pass for batchSize trainingData and get get average gradient which is then applied in update_weights()
-void NeuralNet::train(Vector<Vector<float>>& trainingData, Vector<Vector<float>>& labels, size_t epochs, size_t batchSize, float learningRate) {
+void NeuralNet::train(Vector<Vector<float>>& trainingData, Vector<Vector<float>>& labels, size_t epochs, size_t batchSize, Optimizer optimizer) {
   std::cout << "Started Training on " << trainingData.getSize() << " trainingData, \n" << "Model Parameters\n" << 
     "Epochs: " << epochs << '\n' <<
     "Batch Size: " << batchSize << '\n' <<
-    "Learning Rate: " << learningRate << '\n';
+    "Learning Rate: " << optimizer.learnRate << '\n';
   for (size_t currentEpoch = 1; currentEpoch <= epochs; ++currentEpoch) {
     shuffle(trainingData, labels);
     for (size_t i = 0; i < trainingData.getSize(); ++i) {
       this->forward_pass(trainingData[i]);
       this->backpropagation(labels[i]);
-      //std::cout << "Training in Epoch " << currentEpoch << " on Image " << i + 1 << " in Batch " << i/ batchSize << "\r"  ;
       if ((i+1) % batchSize == 0) {
-        this->update_weights(learningRate, batchSize);
-        std::cout << "Finished Batch " << (i+1)/batchSize << " in Epoch " << currentEpoch << '\r' << std::flush;
+        optimizer.step(weights, biases, weightGradientSum, biasGradientSum, batchSize);
       }
     }
-    std::cout << "Epoch: " << currentEpoch << " done\n";
   }
 }
 
@@ -240,6 +237,7 @@ NeuralNet NeuralNet::load_from_file(const std::string& filename) {
 
   return NeuralNet(inWeights, inBiases);
 }
+
 
 
 std::ostream& operator<<(std::ostream& outputstream, const NeuralNet& net){

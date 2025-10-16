@@ -2,8 +2,12 @@
 #include "helper.hpp"
 #include <iomanip>
 #include <iostream>
+#include <Optimizer.hpp>
 
 using lin::Vector;
+using lin::Matrix;
+using nn::NeuralNet;
+using nn::Optimizer;
 
 lin::Vector<lin::Vector<float>> sliceData(const lin::Vector<lin::Vector<float>>& tData) {
   lin::Vector<lin::Vector<float>> result(100);
@@ -31,11 +35,10 @@ int main() {
   lin::Vector<uint8_t> trainingLabels = nn::load_mnist_labels("data/train-labels-idx1-ubyte");
   auto trainingOneHotLabels = nn::one_hot_encode(trainingLabels);
 
+  Optimizer optimizer(0.01);
   nn::NeuralNet net(784, 10, 2, 128);
- // auto sliceD = sliceData(trainingNormalizedImages);
- // auto sliceL = sliceLabels(trainingOneHotLabels);
 
-  net.train(trainingNormalizedImages, trainingOneHotLabels, 20, 100, 0.005);
+  net.train(trainingNormalizedImages, trainingOneHotLabels, 20, 100, optimizer);
 
   net.save_to_file("test");
 

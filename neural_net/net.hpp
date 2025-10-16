@@ -1,8 +1,8 @@
-#include <cstdint>
 #include <matrix.hpp>
 #include <vector.hpp>
 #include <iostream>
 #include <EvalResult.hpp>
+#include "Optimizer.hpp"
 
 namespace nn {
 
@@ -10,7 +10,7 @@ class NeuralNet {
   public: 
   NeuralNet(size_t inputNodeCount, size_t outputNodeCount, size_t hiddenLayerCount, size_t hiddenNodeCount);
   NeuralNet(const lin::Vector<lin::Matrix<float>>& inWeights, const lin::Vector<lin::Vector<float>>& inBiases); 
-  void train(lin::Vector<lin::Vector<float>>& trainingData, lin::Vector<lin::Vector<float>>& labels, size_t epochs, size_t batchSize, float learningRate);
+  void train(lin::Vector<lin::Vector<float>>& trainingData, lin::Vector<lin::Vector<float>>& labels, size_t epochs, size_t batchSize, Optimizer optimizer);
   void forward_pass(const lin::Vector<float>& inputData);
   void backpropagation(const lin::Vector<float>& targetLabel);
   void update_weights(float LearnRate, size_t batchSize);
@@ -21,8 +21,6 @@ class NeuralNet {
   static NeuralNet load_from_file(const std::string& filename); // factory method to construct a Neural Net from File
 
   friend std::ostream& operator<<(std::ostream& outputstream, const NeuralNet& net);
-
-  private:
 
   size_t inputNodeCount;
   size_t outputNodeCount;
@@ -35,6 +33,9 @@ class NeuralNet {
   lin::Vector<lin::Vector<float>> biases;
   lin::Vector<lin::Matrix<float>> weightGradientSum;
   lin::Vector<lin::Vector<float>> biasGradientSum;
+
+  private:
+
 
   void init_net();
   void init_neurons();
