@@ -117,6 +117,8 @@ float calculate_mse(const lin::Vector<float>& actual, const lin::Vector<float>& 
 }
 
 Vector<Vector<uint8_t>> load_mnist_images(const std::string& filename){
+
+
     std::ifstream file(filename, std::ios::binary);
     if (!file) throw std::runtime_error("Datei nicht gefunden: " + filename);
     int32_t magic;
@@ -169,13 +171,13 @@ Vector<uint8_t> load_mnist_labels(const std::string& filename){
     return labels;
 }
 
-
+// normalize 8 bit integer into [-1,1]
 Vector<Vector<float>> normalize_images(const Vector<Vector<uint8_t>>& images) {
   Vector<Vector<float>> results(images.getSize());
   for(int i=0; i<images.getSize(); ++i) {
     Vector<float> normalized(images[i].getSize());
     for(int j=0; j<images[i].getSize(); ++j) {
-      normalized[j] = (static_cast<float>(images[i][j])/255.0f); //scale down 8 bit integer to [0,1]
+      normalized[j] = ((static_cast<float>(images[i][j])/255.0f - 0.5f)) * 2.0f;
     }
     results[i] = (std::move(normalized));
   }

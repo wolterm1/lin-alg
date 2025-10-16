@@ -96,7 +96,7 @@ void NeuralNet::forward_pass(const Vector<float>& inputData) {
   }
 }
 
-void NeuralNet::backpropagation(const Vector<float>& targetLabel, float learnRate) {
+void NeuralNet::backpropagation(const Vector<float>& targetLabel) {
   // Backpropagation algorithm, Computes Error Vector for each Neuron Layer, starting at the Last Layer and uses dynamic Programming to compute Error Vectors in [0 , L-2]
   size_t L = neurons.getSize();
   Vector<Vector<float>> deltas(L);
@@ -123,6 +123,8 @@ void NeuralNet::backpropagation(const Vector<float>& targetLabel, float learnRat
   }
 }
 
+
+// applies the accumulated Gradients to the weights and biases and then resets the gradients
 void NeuralNet::update_weights(float learnRate, size_t batchSize) {
   for (size_t i = 0; i < weights.getSize(); ++i) {
     weights[i] -= learnRate * weightGradientSum[i] / static_cast<float>(batchSize);
@@ -143,7 +145,7 @@ void NeuralNet::train(Vector<Vector<float>>& trainingData, Vector<Vector<float>>
     shuffle(trainingData, labels);
     for (size_t i = 0; i < trainingData.getSize(); ++i) {
       this->forward_pass(trainingData[i]);
-      this->backpropagation(labels[i], learningRate);
+      this->backpropagation(labels[i]);
       //std::cout << "Training in Epoch " << currentEpoch << " on Image " << i + 1 << " in Batch " << i/ batchSize << "\r"  ;
       if ((i+1) % batchSize == 0) {
         this->update_weights(learningRate, batchSize);
@@ -223,8 +225,6 @@ NeuralNet NeuralNet::load_from_file(const std::string& filename) {
     file.read(reinterpret_cast<char*>(&rows), sizeof(rows));
     uint64_t cols;
     file.read(reinterpret_cast<char*>(&cols), sizeof(cols));
-
-    std::cout << "Rows: " << rows << " Cols: " << cols << '\n';
 
     Matrix<float> mat(rows, cols);
     file.read(reinterpret_cast<char*>(mat.data()), rows * cols * sizeof(float));

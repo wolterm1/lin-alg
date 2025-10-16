@@ -35,7 +35,7 @@ int main() {
  // auto sliceD = sliceData(trainingNormalizedImages);
  // auto sliceL = sliceLabels(trainingOneHotLabels);
 
-  net.train(trainingNormalizedImages, trainingOneHotLabels, 20, 100, 0.001);
+  net.train(trainingNormalizedImages, trainingOneHotLabels, 20, 100, 0.005);
 
   net.save_to_file("test");
 

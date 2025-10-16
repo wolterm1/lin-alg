@@ -12,7 +12,7 @@ class NeuralNet {
   NeuralNet(const lin::Vector<lin::Matrix<float>>& inWeights, const lin::Vector<lin::Vector<float>>& inBiases); 
   void train(lin::Vector<lin::Vector<float>>& trainingData, lin::Vector<lin::Vector<float>>& labels, size_t epochs, size_t batchSize, float learningRate);
   void forward_pass(const lin::Vector<float>& inputData);
-  void backpropagation(const lin::Vector<float>& targetLabel, float learnRate);
+  void backpropagation(const lin::Vector<float>& targetLabel);
   void update_weights(float LearnRate, size_t batchSize);
   lin::Vector<float> classify(const lin::Vector<float>& inputData);
   EvalResult evaluate(const lin::Vector<lin::Vector<float>>& testData, const lin::Vector<lin::Vector<float>>& labels);
