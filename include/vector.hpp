@@ -41,16 +41,25 @@ class Vector {
 
   bool operator==(const Vector<T> &other) const;
   T &operator[](const size_t &pos) const;
+
   Vector<T> &operator+=(const Vector<T> &other);
-  Vector<T> operator+(const Vector<T> &other);
+  Vector<T> operator+(const Vector<T> &other) const ;
+
   Vector<T> &operator-=(const Vector<T> &other);
   Vector<T> operator-(const Vector<T> &other) const;
+
   Vector<T> &operator*=(const T &scalar);
   Vector<T> operator*(const T &scalar) const;
+
   Vector<T> &operator/=(const T &scalar);
   Vector<T> operator/(const T &scalar) const;
-  Vector<T>& hadamard_product_in(const Vector<T>& other);
-  Vector<T> hadamard_product(const Vector<T>& other);
+
+  Vector<T> &operator+=(const T &scalar);
+  Vector<T> operator+(const T &scalar) const;
+
+  Vector<T>& hadamardProductInplace(const Vector<T>& other);
+  Vector<T>& hadamardDivisionInplace(const Vector<T>& other);
+  Vector<T>& applyElementWiseFunction(std::function<T(T)> func);
 
   friend std::ostream &operator<< <T>(std::ostream &outputstream, const Vector<T> &vec);
 
@@ -263,14 +272,45 @@ Vector<T> Vector<T>::operator/(const T &scalar) const{
   copy /= scalar;
   return copy;
 }
+
 template <TensorElement T>
-Vector<T>& Vector<T>::hadamard_product_in(const Vector<T>& other) {
+Vector<T>& Vector<T>::operator+=(const T &scalar) {
+  for (auto &el : *this) {
+    el += scalar;
+  }
+  return *this;
+}
+
+template <TensorElement T> 
+Vector<T> Vector<T>::operator+(const T &scalar) const {
+  Vector<T> copy(*this);
+  copy += scalar;
+  return copy;
+}
+
+template <TensorElement T>
+Vector<T>& Vector<T>::hadamardProductInplace(const Vector<T>& other) {
   for (size_t i = 0; i<size; ++i){
     (*this)[i] *= other[i];
   }
   return *this;
 }
 
+template <TensorElement T>
+Vector<T>& Vector<T>::hadamardDivisionInplace(const Vector<T>& other) {
+  for (size_t i = 0; i<size; ++i) {
+    (*this)[i] /= other[i];
+  }
+  return *this;
+}
+
+template <TensorElement T>
+Vector<T>& Vector<T>::applyElementWiseFunction(std::function<T(T)> func) {
+  for (auto& el : *this) {
+    el = func(el);
+  }
+  return *this;
+}
 
 
 

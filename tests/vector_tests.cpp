@@ -47,7 +47,7 @@ void testMatrix_getTranspose(){
 void testCompMult() {
   Vector<int> vec({1, 2, -3});
   Vector<int> vec2({3,2,2});
-  Vector<int> result = hadamard_product(vec, vec2);
+  Vector<int> result = (vec, vec2);
   Vector<int> expected({3,4,-6});
 
   assert(result == expected);

@@ -96,7 +96,7 @@ void NeuralNet::forward_pass(const Vector<float>& inputData) {
   }
 }
 
-void NeuralNet::backpropagation(const Vector<float>& targetLabel) {
+void NeuralNet::backpropagation(const Vector<float>& targetLabel, size_t batchSize) {
   // Backpropagation algorithm, Computes Error Vector for each Neuron Layer, starting at the Last Layer and uses dynamic Programming to compute Error Vectors in [0 , L-2]
   size_t L = neurons.getSize();
   Vector<Vector<float>> deltas(L);
@@ -118,8 +118,8 @@ void NeuralNet::backpropagation(const Vector<float>& targetLabel) {
     Matrix<float> weightGradientForInstance = lin::outer_product(deltas[i], neurons[i-1]);
     const Vector<float>& biasGradientForInstance = deltas[i];
 
-    weightGradientSum[i-1] += weightGradientForInstance; 
-    biasGradientSum[i-1] += biasGradientForInstance;
+    weightGradientSum[i-1] += weightGradientForInstance / batchSize; 
+    biasGradientSum[i-1] += biasGradientForInstance / batchSize;
   }
 }
 
@@ -127,17 +127,16 @@ void NeuralNet::backpropagation(const Vector<float>& targetLabel) {
 
 // takes in normalized images and one-hot encoded labels in [0,9]
 // Iterates epochs often over training sample, in each epoch, calculate forward pass for batchSize trainingData and get get average gradient which is then applied in update_weights()
-void NeuralNet::train(Vector<Vector<float>>& trainingData, Vector<Vector<float>>& labels, size_t epochs, Optimizer optimizer) {
+void NeuralNet::train(Vector<Vector<float>>& trainingData, Vector<Vector<float>>& labels, size_t epochs, size_t batchSize, Optimizer optimizer) {
   std::cout << "Started Training on " << trainingData.getSize() << " trainingData, \n" << "Model Parameters\n" << 
     "Epochs: " << epochs << '\n' <<
-    "Batch Size: " << optimizer.batchSize << '\n' <<
-    "Learning Rate: " << optimizer.learnRate << '\n';
+    "Batch Size: " << batchSize << '\n';
   for (size_t currentEpoch = 1; currentEpoch <= epochs; ++currentEpoch) {
     shuffle(trainingData, labels);
     for (size_t i = 0; i < trainingData.getSize(); ++i) {
       this->forward_pass(trainingData[i]);
-      this->backpropagation(labels[i]);
-      if ((i+1) % optimizer.batchSize == 0) {
+      this->backpropagation(labels[i], batchSize);
+      if ((i+1) % batchSize == 0) {
         optimizer.step(weights, biases, weightGradientSum, biasGradientSum);
       }
     }

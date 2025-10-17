@@ -52,27 +52,26 @@ class Matrix {
   bool operator==(const Matrix<T> &other) const;
 
   Matrix<T> operator+(const Matrix<T> &other) const;
-
   Matrix<T> &operator+=(const Matrix<T> &other);
 
   Matrix<T> operator-(const Matrix<T> &other) const;
-
   Matrix<T> &operator-=(const Matrix<T> &other);
 
   Matrix<T> operator*(const T &scalar) const;
-
   Matrix<T> &operator*=(const T &scalar);
 
   Matrix<T> operator/(const T &scalar) const;
-
   Matrix<T> &operator/=(const T &scalar);
 
-  Matrix<T> operator*(const Matrix<T> &other) const;
+  Matrix<T> operator+(const T &scalar) const;
+  Matrix<T> &operator+=(const T &scalar);
 
+  Matrix<T> operator*(const Matrix<T> &other) const;
   Matrix<T> &operator*=(const Matrix<T> &other);
 
-  Matrix<T> &elementWiseMultInplace(const Matrix<T> &other);
 
+  Matrix<T> &hadamardProductInplace(const Matrix<T> &other);
+  Matrix<T> &hadamardDivisionInplace(const Matrix <T> &other);
   Matrix<T> &applyElementWiseFunction(std::function<T(T)> func);
 
   size_t getRows() const;
@@ -397,6 +396,7 @@ Matrix<T> &Matrix<T>::operator*=(const Matrix<T> &other) {
   return *this;
 }
 
+
 template <Numeric T>
 Matrix<T> Matrix<T>::operator*(const T &scalar) const {
   Matrix<T> copy(*this);
@@ -414,8 +414,23 @@ Matrix<T> &Matrix<T>::operator*=(const T &scalar) {
   return *this;
 }
 
+template <Numeric T>
+Matrix<T> Matrix<T>::operator+(const T &scalar) const {
+  Matrix<T> copy(*this);
+  copy += scalar;
+  return copy;
+}
+
+template <Numeric T>
+Matrix<T>& Matrix<T>::operator+=(const T &scalar) {
+  for (auto &el : *this) {
+    el += scalar;
+  }
+  return *this;
+}
+
 template<Numeric T>
-Matrix<T>& Matrix<T>::elementWiseMultInplace(const Matrix<T>& other) {
+Matrix<T>& Matrix<T>::hadamardProductInplace(const Matrix<T>& other) {
   assert(rows == other.getRows() && columns == other.getColumns());
   for (int i = 0; i < rows; ++i) {
     for (int j = 0; j < columns; ++j) {
@@ -424,6 +439,18 @@ Matrix<T>& Matrix<T>::elementWiseMultInplace(const Matrix<T>& other) {
   }
   return *this;
 }
+
+template<Numeric T>
+Matrix<T>& Matrix<T>::hadamardDivisionInplace(const Matrix<T>& other) {
+  assert(rows == other.getRows() && columns == other.getColumns());
+  for (int i = 0; i < rows; ++i) {
+    for (int j = 0; j < columns; ++j) {
+      (*this)(i, j) /= other(i, j);
+    }
+  }
+  return *this;
+}
+
 
 template<Numeric T>
 Matrix<T>& Matrix<T>::applyElementWiseFunction(std::function<T(T)> func) {

@@ -52,6 +52,8 @@ int main() {
 
   Matrix<float> base(4, 5, 36.0F);
   auto lsqrt = [](float x) { return std::sqrt(x);};
-  std::cout << base << "applying function std::sqrt(): " << base.applyElementWiseFunction(lsqrt);
+  std::cout << base << "applying function std::sqrt(): " << base.applyElementWiseFunction(lsqrt) << '\n';
+
+  std::cout << base.hadamardProductInplace(base);
 
 }

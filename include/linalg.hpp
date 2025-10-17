@@ -56,9 +56,9 @@ Matrix<T> outer_product(const Vector<T>& first, const Vector<T>& second) {
 
 
 template <TensorElement T>
-Vector<T> hadamard_product(const Vector<T>& first, const Vector<T>& second)  {
+Vector<T> hadamardProduct(const Vector<T>& first, const Vector<T>& second)  {
   Vector<T> copy(first);
-  return copy.hadamard_product_in(second);
+  return copy.hadamardProductInplace(second);
 }
 
 template <Numeric T>
