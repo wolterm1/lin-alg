@@ -71,6 +71,10 @@ class Matrix {
 
   Matrix<T> &operator*=(const Matrix<T> &other);
 
+  Matrix<T> &elementWiseMultInplace(const Matrix<T> &other);
+
+  Matrix<T> &applyElementWiseFunction(std::function<T(T)> func);
+
   size_t getRows() const;
   size_t getColumns() const;
   T* data() const;
@@ -405,6 +409,27 @@ Matrix<T> &Matrix<T>::operator*=(const T &scalar) {
   for (int i = 0; i < rows; ++i) {
     for (int j = 0; j < columns; ++j) {
       (*this)(i, j) *= scalar;
+    }
+  }
+  return *this;
+}
+
+template<Numeric T>
+Matrix<T>& Matrix<T>::elementWiseMultInplace(const Matrix<T>& other) {
+  assert(rows == other.getRows() && columns == other.getColumns());
+  for (int i = 0; i < rows; ++i) {
+    for (int j = 0; j < columns; ++j) {
+      (*this)(i, j) *= other(i, j);
+    }
+  }
+  return *this;
+}
+
+template<Numeric T>
+Matrix<T>& Matrix<T>::applyElementWiseFunction(std::function<T(T)> func) {
+  for (int i = 0; i < rows; ++i) {
+    for (int j = 0; j < columns; ++j) {
+      (*this)(i, j) = func((*this)(i, j));
     }
   }
   return *this;

@@ -101,10 +101,10 @@ float uniform_distribution_in(float lower, float upper) {
     return static_cast<float>(dist(gen));
 }
 
-float normal_distribution_in(float lower, float upper) {
+float normal_distribution_in(float mean, float stddev) {
     static std::random_device rd;
     static std::mt19937 gen(rd());
-    std::normal_distribution<float> dist(lower, upper);
+    std::normal_distribution<float> dist(mean, stddev);
     return static_cast<float>(dist(gen));
 }
 

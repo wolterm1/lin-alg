@@ -24,7 +24,7 @@ lin::Vector<float> softmax(const lin::Vector<float>& inputVector);
 
 float uniform_distribution_in(float lower, float upper);
 
-float normal_distribution_in(float lower, float upper);
+float normal_distribution_in(float mean, float stddev);
 
 float calculate_mse(const lin::Vector<float>& actual, const lin::Vector<float>& target);
 

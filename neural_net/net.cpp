@@ -124,30 +124,21 @@ void NeuralNet::backpropagation(const Vector<float>& targetLabel) {
 }
 
 
-// applies the accumulated Gradients to the weights and biases and then resets the gradients
-void NeuralNet::update_weights(float learnRate, size_t batchSize) {
-  for (size_t i = 0; i < weights.getSize(); ++i) {
-    weights[i] -= learnRate * weightGradientSum[i] / static_cast<float>(batchSize);
-    biases[i] -= learnRate * biasGradientSum[i] / static_cast<float>(batchSize);
-    weightGradientSum[i] = Matrix(weightGradientSum[i].getRows(), weightGradientSum[i].getColumns(), 0.0f);
-    biasGradientSum[i] = Vector(biasGradientSum[i].getSize(), 0.0f);
-  }
-}
 
 // takes in normalized images and one-hot encoded labels in [0,9]
 // Iterates epochs often over training sample, in each epoch, calculate forward pass for batchSize trainingData and get get average gradient which is then applied in update_weights()
-void NeuralNet::train(Vector<Vector<float>>& trainingData, Vector<Vector<float>>& labels, size_t epochs, size_t batchSize, Optimizer optimizer) {
+void NeuralNet::train(Vector<Vector<float>>& trainingData, Vector<Vector<float>>& labels, size_t epochs, Optimizer optimizer) {
   std::cout << "Started Training on " << trainingData.getSize() << " trainingData, \n" << "Model Parameters\n" << 
     "Epochs: " << epochs << '\n' <<
-    "Batch Size: " << batchSize << '\n' <<
+    "Batch Size: " << optimizer.batchSize << '\n' <<
     "Learning Rate: " << optimizer.learnRate << '\n';
   for (size_t currentEpoch = 1; currentEpoch <= epochs; ++currentEpoch) {
     shuffle(trainingData, labels);
     for (size_t i = 0; i < trainingData.getSize(); ++i) {
       this->forward_pass(trainingData[i]);
       this->backpropagation(labels[i]);
-      if ((i+1) % batchSize == 0) {
-        optimizer.step(weights, biases, weightGradientSum, biasGradientSum, batchSize);
+      if ((i+1) % optimizer.batchSize == 0) {
+        optimizer.step(weights, biases, weightGradientSum, biasGradientSum);
       }
     }
   }

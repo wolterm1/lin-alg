@@ -1,11 +1,14 @@
 #include "../include/matrix.hpp"
 
+#include <cmath>
 #include <iostream>
 #include <unordered_set>
-#include <vector>
 using lin::Matrix;
 using std::cout;
 using std::unordered_multiset;
+
+
+
 
 int main() {
   Matrix<int> einheitsMatrix = Matrix<int>::createIdentity(4, 4);
@@ -46,4 +49,9 @@ int main() {
   cout << "transposing: " << '\n';
   Matrix<int> transposedUnit = Matrix({{1, 2, 3}, {4, 5, 6}, {7, 8, 9}});
   cout << "transposedUnitMat: \n" << transposedUnit << '\n';
+
+  Matrix<float> base(4, 5, 36.0F);
+  auto lsqrt = [](float x) { return std::sqrt(x);};
+  std::cout << base << "applying function std::sqrt(): " << base.applyElementWiseFunction(lsqrt);
+
 }
