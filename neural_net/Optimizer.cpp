@@ -12,38 +12,54 @@ namespace nn {
 constexpr auto square_root = [](float x) { return std::sqrt(x); };
 
 
-Optimizer::Optimizer(float lr) : learnRate(lr) {
+Optimizer::Optimizer(float learnRate, float beta1, float beta2) : learnRate(learnRate), beta1(beta1), beta2(beta2), stepTime(0) {
+  initialized = false;
 }
 
+void Optimizer::lazyInitMeanAndVariance(const Vector<Matrix<float>>& weights, const Vector<Vector<float>>& biases) {
+  if(!initialized) {
+    size_t layerCount = weights.getSize();
+    allocateMomentVectors(layerCount);
+    for (size_t i = 0; i < layerCount; ++i) {
+      weightMean[i] = Matrix<float>(weights[i].getRows(), weights[i].getColumns(), 0.0F);
+      weightVariance[i] = Matrix<float>(weights[i].getRows(), weights[i].getColumns(), 0.0F);
+      biasMean[i] = Vector<float>(biases[i].getSize(), 0.0F);
+      biasVariance[i] = Vector<float>(biases[i].getSize(), 0.0F);
+    }
+  }
+}
+
+void Optimizer::allocateMomentVectors(size_t layers) {
+  weightMean = Vector<Matrix<float>>(layers);
+  weightVariance = Vector<Matrix<float>>(layers);
+  biasMean = Vector<Vector<float>>(layers);
+  biasVariance = Vector<Vector<float>>(layers);
+}
+
+void Optimizer::resetGradientSum(Vector<Matrix<float>>& wGradSum, Vector<Vector<float>>& bGradSum) {
+  for (size_t i = 0; i < wGradSum.getSize(); ++i) {
+    wGradSum[i] = Matrix(wGradSum[i].getRows(), wGradSum[i].getColumns(), 0.0F);
+    bGradSum[i] = Vector(bGradSum[i].getSize(), 0.0F);
+  }
+}
 
 void Optimizer::step(Vector<Matrix<float>>& weights, Vector<Vector<float>>& biases,
                       Vector<Matrix<float>>& wGradientSum, Vector<Vector<float>>& bGradientSum) {
-  for (size_t i = 0; i < weights.getSize(); ++i) {
 
-    wGradientSum[i] = Matrix(wGradientSum[i].getRows(), wGradientSum[i].getColumns(), 0.0F);
-    bGradientSum[i] = Vector(bGradientSum[i].getSize(), 0.0F);
-  }
-  std::cout << "step called";
+  computeAdam(weights, biases, wGradientSum, bGradientSum);
+  resetGradientSum(wGradientSum, bGradientSum);
 }
 
 
 void Optimizer::computeAdam(Vector<Matrix<float>>& weights, Vector<Vector<float>>& biases,
                       Vector<Matrix<float>>& wGradientSum, Vector<Vector<float>>& bGradientSum) {
 
-  Vector<Matrix<float>> weightMean;
-  Vector<Matrix<float>> weightVariance;
-  Vector<Vector<float>> biasMean;
-  Vector<Vector<float>> biasVariance;
-  size_t stepTime;
-  const float learnRate = 1e-3;
-                            //
-  const float beta1 = 0.9;
-  const float beta2 = 0.999; 
-  const float eps = 1e-8;
   // update step
+  lazyInitMeanAndVariance(weights, biases);
 
 
   for (size_t i = 0; i < weights.getSize(); ++i) {
+    stepTime++;
     weightMean[i] = beta1 * weightMean[i] + (1-beta1) * wGradientSum[i];
     weightVariance[i] = beta2 * weightVariance[i] + (1.0F - beta2) * (wGradientSum[i].hadamardProductInplace(wGradientSum[i]));
     auto weightMeanCorrectedEst = weightMean[i] / (1.0F - std::pow(beta1, stepTime));

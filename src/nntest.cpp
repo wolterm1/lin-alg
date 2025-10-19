@@ -35,10 +35,10 @@ int main() {
   lin::Vector<uint8_t> trainingLabels = nn::load_mnist_labels("data/train-labels-idx1-ubyte");
   auto trainingOneHotLabels = nn::one_hot_encode(trainingLabels);
 
-  Optimizer optimizer(0.01, 128);
+  Optimizer adamOptimizer;
   nn::NeuralNet net(784, 10, 2, 128);
 
-  net.train(trainingNormalizedImages, trainingOneHotLabels, 20, optimizer);
+  net.train(trainingNormalizedImages, trainingOneHotLabels, 30, 128, adamOptimizer);
 
   net.save_to_file("test");
 

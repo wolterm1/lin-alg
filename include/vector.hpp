@@ -15,7 +15,7 @@ template <TensorElement T>
 std::ostream &operator<<(std::ostream &outputstream, const Vector<T> &vec);
 
 template <TensorElement T>
-bool checkEqualDimensions(const Vector<T> &first, const Vector<T> &second);
+void checkEqualDimensions(const Vector<T> &first, const Vector<T> &second);
 
 template <TensorElement T>
 class Vector {
@@ -221,7 +221,7 @@ Vector<T> &Vector<T>::operator+=(const Vector<T> &other) {
 }
 
 template <TensorElement T>
-Vector<T> Vector<T>::operator+(const Vector<T> &other) {
+Vector<T> Vector<T>::operator+(const Vector<T> &other) const {
   Vector<T> copy(*this);
   copy += other;
   return copy;
@@ -343,8 +343,8 @@ T* Vector<T>::data() const {
 /***** friend functons *****/
 
 template <TensorElement T>
-bool checkEqualDimensions(const Vector<T> &first, const Vector<T> &second) {
-  return first.getSize() == second.getSize();
+void checkEqualDimensions(const Vector<T> &first, const Vector<T> &second) {
+  assert(first.getSize() == second.getSize());
 }
 
 template <TensorElement T>

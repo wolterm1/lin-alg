@@ -11,7 +11,7 @@
 
 using lin::Vector;
 using lin::Matrix;
-using lin::hadamard_product;
+using lin::hadamardProduct;
 
 namespace nn {
 
@@ -107,7 +107,7 @@ void NeuralNet::backpropagation(const Vector<float>& targetLabel, size_t batchSi
   for (size_t i = L-2;  i>0; --i) {
 
     assert(weights[i].getTranspose().getColumns() == deltas[i+1].getSize());
-    deltas[i] = hadamard_product(
+    deltas[i] = hadamardProduct(
         weights[i].getTranspose() * deltas[i+1],
         apply_activation_function(zvalues[i], relu_derivative)
         );
