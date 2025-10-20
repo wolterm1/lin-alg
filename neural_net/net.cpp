@@ -7,11 +7,11 @@
 #include <iomanip>
 #include <fstream>
 #include <filesystem>
-#include "EvalResult.hpp"
 
 using lin::Vector;
 using lin::Matrix;
 using lin::hadamardProduct;
+using eval::ConfusionMatrix;
 
 namespace nn {
 
@@ -20,7 +20,7 @@ NeuralNet::NeuralNet(size_t inputNodeCount, size_t outputNodeCount, size_t hidde
   init_net();
 }
 
-NeuralNet::NeuralNet(const lin::Vector<lin::Matrix<float>>& inWeights, const lin::Vector<lin::Vector<float>>& inBiases) : inputNodeCount(inWeights[0].getColumns()), outputNodeCount(inWeights[inWeights.getSize()-1].getColumns()), hiddenLayerCount(inWeights.getSize()-1), hiddenNodeCount(inWeights[0].getRows()) {
+NeuralNet::NeuralNet(const Vector<Matrix<float>>& inWeights, const Vector<Vector<float>>& inBiases) : inputNodeCount(inWeights[0].getColumns()), outputNodeCount(inWeights[inWeights.getSize()-1].getColumns()), hiddenLayerCount(inWeights.getSize()-1), hiddenNodeCount(inWeights[0].getRows()) {
   init_neurons();
   init_zvalues();
   init_gradients();
@@ -148,17 +148,19 @@ Vector<float> NeuralNet::classify(const Vector<float>& inputData) {
   return neurons[hiddenLayerCount+1];
 }
 
-EvalResult NeuralNet::evaluate(const lin::Vector<lin::Vector<float>>& testData, const lin::Vector<lin::Vector<float>>& labels){
-  float accuracy = 0.0;
-  for (size_t i= 0; i < testData.getSize(); ++i) {
-    auto predictionDistribution = this->classify(testData[i]);
-    int prediction = getIndexOfMax(predictionDistribution);
-    if (prediction == getIndexOfMax(labels[i])) {
-      accuracy += 1.0;
-    }
+ConfusionMatrix NeuralNet::evaluate(const Vector<Vector<float>>& testData, const Vector<Vector<float>>& labels){
+  size_t sampleCount = testData.getSize();
+  Vector<int> predictions(sampleCount);
+  Vector<int> truth(sampleCount);
+
+  for (size_t i = 0; i < sampleCount; ++i) {
+    predictions[i] = getIndexOfMax(this->classify(testData[i]));
+    truth[i] = getIndexOfMax(labels[i]);
   }
-  accuracy /= static_cast<float>(testData.getSize());
-  return EvalResult(accuracy, 1.0, 1.0);
+
+  ConfusionMatrix confMat(10);
+  confMat.calculate(predictions, truth);
+  return confMat;
 }
 
 

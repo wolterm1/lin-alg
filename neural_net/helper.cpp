@@ -38,7 +38,7 @@ void shuffle(lin::Vector<lin::Vector<float>>& trainingData, lin::Vector<lin::Vec
   }
 }
 
-int getIndexOfMax(Vector<float>& vec) {
+int getIndexOfMax(const Vector<float>& vec) {
   size_t maxSoFarIndex = 0;
   for (size_t i = 0; i < vec.getSize(); ++i) {
     if (vec[i] > vec[maxSoFarIndex]) {

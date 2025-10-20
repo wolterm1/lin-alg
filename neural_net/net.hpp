@@ -1,10 +1,11 @@
 #include <matrix.hpp>
 #include <vector.hpp>
 #include <iostream>
-#include <EvalResult.hpp>
+#include "confusion_matrix.hpp"
 #include "Optimizer.hpp"
 
 namespace nn {
+
 
 class NeuralNet {
   public: 
@@ -15,7 +16,7 @@ class NeuralNet {
   void backpropagation(const lin::Vector<float>& targetLabel, size_t batchSize);
   void update_weights(float LearnRate, size_t batchSize);
   lin::Vector<float> classify(const lin::Vector<float>& inputData);
-  EvalResult evaluate(const lin::Vector<lin::Vector<float>>& testData, const lin::Vector<lin::Vector<float>>& labels);
+  eval::ConfusionMatrix evaluate(const lin::Vector<lin::Vector<float>>& testData, const lin::Vector<lin::Vector<float>>& labels);
 
   void save_to_file(const std::string& filename);
   static NeuralNet load_from_file(const std::string& filename); // factory method to construct a Neural Net from File

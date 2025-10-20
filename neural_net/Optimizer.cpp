@@ -54,12 +54,11 @@ void Optimizer::step(Vector<Matrix<float>>& weights, Vector<Vector<float>>& bias
 void Optimizer::computeAdam(Vector<Matrix<float>>& weights, Vector<Vector<float>>& biases,
                       Vector<Matrix<float>>& wGradientSum, Vector<Vector<float>>& bGradientSum) {
 
-  // update step
   lazyInitMeanAndVariance(weights, biases);
-
 
   for (size_t i = 0; i < weights.getSize(); ++i) {
     stepTime++;
+
     weightMean[i] = beta1 * weightMean[i] + (1-beta1) * wGradientSum[i];
     weightVariance[i] = beta2 * weightVariance[i] + (1.0F - beta2) * (wGradientSum[i].hadamardProductInplace(wGradientSum[i]));
     auto weightMeanCorrectedEst = weightMean[i] / (1.0F - std::pow(beta1, stepTime));

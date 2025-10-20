@@ -1,8 +1,8 @@
 #include "confusion_matrix.hpp"
 
-namespace nn {
+namespace eval {
 
-ConfusionMatrix::ConfusionMatrix(size_t classCount) : classCount(classCount) {
+ConfusionMatrix::ConfusionMatrix(size_t classCount) : classCount(classCount), sampleCount(0) {
   truePositives = Vector<size_t>(classCount, 0);
   trueNegatives =  Vector<size_t>(classCount, 0);
   falsePositives = Vector<size_t>(classCount, 0);
@@ -10,8 +10,8 @@ ConfusionMatrix::ConfusionMatrix(size_t classCount) : classCount(classCount) {
 }
 
 void ConfusionMatrix::calculate(const Vector<int>& prediction, const Vector<int>& truth) {
-  size_t dataCount = prediction.getSize();
-  for (size_t i = 0; i < dataCount; ++i) {
+  size_t sampleCount = prediction.getSize();
+  for (size_t i = 0; i < sampleCount; ++i) {
     int pred = prediction[i];
     int actual = truth[i];
 
@@ -23,11 +23,11 @@ void ConfusionMatrix::calculate(const Vector<int>& prediction, const Vector<int>
       falseNegatives[actual] += 1;
     }
   }
-  calculateTrueNegatives(prediction.getSize());
+  calculateTrueNegatives();
 }
 
 
-void ConfusionMatrix::calculateTrueNegatives(size_t sampleCount) {
+void ConfusionMatrix::calculateTrueNegatives() {
   for (int i = 0; i < classCount; ++i) {
     trueNegatives[i] = sampleCount - (truePositives[i] + falsePositives[i] + falseNegatives[i]);
   }

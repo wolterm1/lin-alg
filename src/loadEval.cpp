@@ -1,8 +1,12 @@
+#include <string>
 #include "../neural_net/net.hpp"
-#include "helper.hpp"
-#include "string"
+#include "../neural_net/helper.hpp"
+#include "../neural_net/classification_metrics.hpp" 
+
+using namespace eval;
 
 int main() {
+
   std::string str;
   std::cin >> str;
   auto net = nn::NeuralNet::load_from_file(str);
@@ -10,6 +14,12 @@ int main() {
   auto testData = nn::normalize_images(nn::load_mnist_images("data/t10k-images-idx3-ubyte"));
   auto testLabels = nn::one_hot_encode(nn::load_mnist_labels("data/t10k-labels-idx1-ubyte"));
 
-  std::cout << net.evaluate(testData, testLabels);
+  auto confMat = net.evaluate(testData, testLabels);
+  std::cout << "Evaluation of Net " << str << ": \n" <<
+    "Accuracy: " << calculateAccuracy(confMat) << '\n' <<
+    "Precision: " <<  calculatePrecision(confMat) << '\n' <<
+    "Recall: " << calculateRecall(confMat) << '\n' <<
+    "F1-Score: " << calculateF1Score(confMat) << '\n';
+
 }
 
