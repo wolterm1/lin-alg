@@ -10,8 +10,9 @@ namespace lin {
 template <Numeric T>
 class Matrix;
 
+/* forward declare */
 template <Numeric T>
-std::ostream &operator<<(std::ostream &os, const Matrix<T> &);
+std::ostream &operator<<(std::ostream &outputstream, const Matrix<T> &);
 
 template <Numeric T = int>
 class Matrix {
@@ -33,7 +34,7 @@ class Matrix {
   Matrix(const size_t &rows, const size_t &columns);
   Matrix();
 
-  // rule of five
+  /* rule of five */
   Matrix(const Matrix<T> &other);
   Matrix(Matrix<T> &&other) noexcept;
   Matrix<T> &operator=(const Matrix<T> &other);

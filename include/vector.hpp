@@ -26,7 +26,7 @@ class Vector {
   void allocateForVecData();
 
  public:
-  // rule of five
+  /* rule of five */
   Vector(const Vector<T> &other);
   Vector(Vector<T> &&vec) noexcept;
   Vector<T> &operator=(const Vector<T> &other);
