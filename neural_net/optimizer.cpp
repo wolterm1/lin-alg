@@ -1,4 +1,4 @@
-#include "Optimizer.hpp"
+#include "optimizer.hpp"
 #include <cmath>
 #include "matrix.hpp"
 #include "vector.hpp"
@@ -18,6 +18,8 @@ Optimizer::Optimizer(float learnRate, float beta1, float beta2) : learnRate(lear
 
 void Optimizer::lazyInitMeanAndVariance(const Vector<Matrix<float>>& weights, const Vector<Vector<float>>& biases) {
   if(!initialized) {
+    initialized = true;
+
     size_t layerCount = weights.getSize();
     allocateMomentVectors(layerCount);
     for (size_t i = 0; i < layerCount; ++i) {
@@ -56,8 +58,9 @@ void Optimizer::computeAdam(Vector<Matrix<float>>& weights, Vector<Vector<float>
 
   lazyInitMeanAndVariance(weights, biases);
 
+  stepTime++;
   for (size_t i = 0; i < weights.getSize(); ++i) {
-    stepTime++;
+    // 1.0F - std::pow(beta, stepTime) should be cached for efficiency
 
     weightMean[i] = beta1 * weightMean[i] + (1-beta1) * wGradientSum[i];
     weightVariance[i] = beta2 * weightVariance[i] + (1.0F - beta2) * (wGradientSum[i].hadamardProductInplace(wGradientSum[i]));
@@ -66,14 +69,12 @@ void Optimizer::computeAdam(Vector<Matrix<float>>& weights, Vector<Vector<float>
     weights[i] -= learnRate * weightMeanCorrectedEst.hadamardDivisionInplace(weightVarianceCorrectedEst.applyElementWiseFunction(square_root) + eps);
 
 
-
     biasMean[i] = beta1 * biasMean[i] + (1-beta1) * bGradientSum[i];
     biasVariance[i] = beta2 * biasVariance[i] + (1.0F - beta2) * (bGradientSum[i].hadamardProductInplace(bGradientSum[i]));
     auto biasMeanCorrectedEst = biasMean[i] / (1.0F - std::pow(beta1, stepTime));
     auto biasVarianceCorrectedEst = biasVariance[i] / (1.0F - std::pow(beta2, stepTime));
     biases[i] -= learnRate * biasMeanCorrectedEst.hadamardDivisionInplace(biasVarianceCorrectedEst.applyElementWiseFunction(square_root) + eps);
   }
-
 }
 
 }

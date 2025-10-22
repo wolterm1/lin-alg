@@ -2,7 +2,7 @@
 #include <vector.hpp>
 #include <iostream>
 #include "confusion_matrix.hpp"
-#include "Optimizer.hpp"
+#include "optimizer.hpp"
 
 namespace nn {
 

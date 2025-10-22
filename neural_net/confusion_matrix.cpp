@@ -10,7 +10,7 @@ ConfusionMatrix::ConfusionMatrix(size_t classCount) : classCount(classCount), sa
 }
 
 void ConfusionMatrix::calculate(const Vector<int>& prediction, const Vector<int>& truth) {
-  size_t sampleCount = prediction.getSize();
+  sampleCount = prediction.getSize();
   for (size_t i = 0; i < sampleCount; ++i) {
     int pred = prediction[i];
     int actual = truth[i];

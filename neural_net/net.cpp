@@ -148,6 +148,8 @@ Vector<float> NeuralNet::classify(const Vector<float>& inputData) {
   return neurons[hiddenLayerCount+1];
 }
 
+
+
 ConfusionMatrix NeuralNet::evaluate(const Vector<Vector<float>>& testData, const Vector<Vector<float>>& labels){
   size_t sampleCount = testData.getSize();
   Vector<int> predictions(sampleCount);
@@ -165,14 +167,14 @@ ConfusionMatrix NeuralNet::evaluate(const Vector<Vector<float>>& testData, const
 
 
 void NeuralNet::save_to_file(const std::string& filename){
+  auto renamedFilename = filename;
   if (std::filesystem::exists(filename)) {
-    auto renamedString = genTimeStampForFilename(filename); 
-    std::filesystem::rename(filename, renamedString.str());  // Datei umbenennen
-    std::cout << "File " << filename << " already exists, saving as: " << renamedString.str() << '\n';
+    renamedFilename = genTimeStampForFilename(filename).str();
+    std::cout << "File " << filename << " already exists, saving as: " << renamedFilename << '\n';
   }
 
-  std::fstream file(filename, std::ios::trunc | std::ios::out | std::ios::binary);
   
+  std::fstream file(renamedFilename, std::ios::trunc | std::ios::out | std::ios::binary);
   std::string magic = "KNNET";
   file.write(magic.data(), 5 * sizeof(char));
 

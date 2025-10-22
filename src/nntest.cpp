@@ -1,8 +1,8 @@
 #include "../neural_net/net.hpp"
-#include "helper.hpp"
+#include "../neural_net/helper.hpp"
 #include <iomanip>
 #include <iostream>
-#include <Optimizer.hpp>
+#include "../neural_net/optimizer.hpp"
 
 using lin::Vector;
 using lin::Matrix;
@@ -38,7 +38,7 @@ int main() {
   Optimizer adamOptimizer;
   nn::NeuralNet net(784, 10, 2, 128);
 
-  net.train(trainingNormalizedImages, trainingOneHotLabels, 30, 128, adamOptimizer);
+  net.train(trainingNormalizedImages, trainingOneHotLabels, 35, 128, adamOptimizer);
 
   net.save_to_file("test");
 
