@@ -13,6 +13,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+add_library(lin-alg INTERFACE)
+target_include_directories(lin-alg INTERFACE ${PROJECT_SOURCE_DIR}/include)
+
 
 ####
 add_executable(matrix tests/matrix.cpp)
