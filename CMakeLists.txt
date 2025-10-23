@@ -14,21 +14,6 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
-
-
-set(DEFS
-    neural_net/classification_metrics.cpp
-    neural_net/classification_metrics.hpp
-    neural_net/confusion_matrix.cpp
-    neural_net/confusion_matrix.hpp
-    neural_net/helper.cpp
-    neural_net/helper.hpp
-    neural_net/net.cpp
-    neural_net/net.hpp
-    neural_net/optimizer.cpp
-    neural_net/optimizer.hpp
-)
-
 ####
 add_executable(matrix tests/matrix.cpp)
 
@@ -40,12 +25,7 @@ add_executable(vector_test tests/vector_tests.cpp)
 ####
 
 
-add_executable(nn_test src/nntest.cpp ${DEFS})
-
-add_executable(loadEval src/loadEval.cpp ${DEFS})
-
-
-set(MY_TARGETS matrix matrix_iter matrix_operator_test vector_test nn_test loadEval)
+set(MY_TARGETS matrix matrix_iter matrix_operator_test vector_test)
 
 foreach(target ${MY_TARGETS})
   target_include_directories(${target} PRIVATE ${PROJECT_SOURCE_DIR}/include)
