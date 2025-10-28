@@ -1,4 +1,5 @@
 #include "../include/matrix.hpp"
+#include "../include/vector.hpp"
 
 #include <cmath>
 #include <iostream>
@@ -55,5 +56,7 @@ int main() {
   std::cout << base << "applying function std::sqrt(): " << base.applyElementWiseFunction(lsqrt) << '\n';
 
   std::cout << base.hadamardProductInplace(base);
+
+  std::cout << "Iterator constructed Vector: \n" << lin::Vector<float>(base.begin(), base.end()) << '\n';
 
 }

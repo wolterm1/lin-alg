@@ -39,6 +39,9 @@ class Vector {
   Vector(const std::initializer_list<T> &init);
   Vector(const size_t &psize, const std::function<T()>& func); 
 
+  template <typename Iter>
+  Vector(Iter first, Iter last);
+
   bool operator==(const Vector<T> &other) const;
   T &operator[](const size_t &pos) const;
 
@@ -167,6 +170,13 @@ Vector<T>::Vector(const Vector<T> &other) : size(other.size) {
   for (int i = 0; i < size; ++i) {
     (*this)[i] = other[i];
   }
+}
+
+template <TensorElement T>
+template <typename Iter>
+Vector<T>::Vector(Iter first, Iter last) : size(last - first) {
+  allocateForVecData();
+  std::copy(first, last, vecData); 
 }
 
 template <TensorElement T>
